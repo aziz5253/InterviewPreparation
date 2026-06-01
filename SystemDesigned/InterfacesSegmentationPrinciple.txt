@@ -1,0 +1,53 @@
+Interfaces Segmentation Principle
+interfaces should be such that client should not implements unnecessary function that they do not need
+
+interface RestaurantEmployee {
+
+    void washDishes();
+    void serveCustomers();
+    void cookFood();
+}
+
+class Waiter implements RestaurantEmployee {
+
+    public void washDishes() {
+        // not my job
+    }
+
+    public void serveCustomers() {
+        // yes and here is my implementation
+        System.out.println("serving the customer");
+    }
+
+    public void cookFood() {
+        // not my job
+    }
+}
+Divide each interface into small segmentaion
+
+interface WaiterInterface{
+void serveCustomers();
+void takeOrder();
+}
+
+interface ChefInterface{
+void cook();
+void decideMenu();
+}
+
+interface HelperInterface{
+void washDishes();
+}
+
+
+class waiter implements WaiterInterface {
+
+    public void serveCustomers() {
+        System.out.println("serving the customer");
+    }
+
+    public void takeOrder() {
+        System.out.println("taking orders");
+    }
+}
+

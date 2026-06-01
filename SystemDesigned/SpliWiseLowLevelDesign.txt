@@ -1,0 +1,99 @@
+Step1-Requirement
+1) Add Friend Capability
+2)Add/Manage Group
+3)Add/Manage Friend inside a group
+4)Manage expenses inside a group/Without a group
+5)Split expenses capability
+a)Equal Split
+b)Unequal Split
+c)Percentage wise
+6)BalanceSheet of each User
+
+1)400 - 100
+      100
+	  100
+	  100
+2)400- 50
+	 100
+	 50
+	 200
+3)400 - 10%
+	  20%
+	  5%
+	  5%
+Step2-Object Identification
+1)Splitwise
+2)User
+3)Group
+4)Expense
+5)Split??
+6)BalanceSheet
+
+Expense-Entitiy
+String expenseId;
+String expenseDescription;
+Double Amount;
+User paidBy;
+List<Split> split;
+Splitype splitType;
+
+Split-Entity
+User user;
+Double amount;
+
+Enum splitType
+Equal
+Not Equal
+Percentage
+
+ExpenseController -create expense from
+expenseId,expenseDescription,Amount,paidBy,split,splitType
+
+Factory SplitFactory will check type and accordingly give Equal,Unequal and Percentage object of ExpenseInterface
+
+ExpenseInterface
+validate() which will implemented by Equal,Unequal and Percentage
+
+then it will create expense
+
+User
+userId
+userName
+UserExpenseBalanceSheet expenseDetails;
+
+UserCOntroller
+List<User> user;
+
+Expense can be created from user or group
+
+Group
+String groupId
+String groupName
+List<User> user;
+List<Expense> expenseList;
+ExpenseController;
+
+UserExpenseBalanceSheet
+Map<User,Balance> friendsBalance;
+double totalMyExpense;
+double totalAmountPaid;
+double totalAmountGetBack;
+double totalAmountOwe;
+
+Balance
+double  amountGetBack;
+double  amountOwe;
+
+BalanceSheetController -UpdateBalcnceSheet
+
+Splitwise
+UserCOntroller
+GroupController
+
+U1->400
+Equally
+u1->200
+u2->200
+
+
+	  

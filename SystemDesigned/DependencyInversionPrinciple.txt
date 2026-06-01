@@ -1,0 +1,38 @@
+Dependency Inversion Principle
+
+Class should depend on interfaces rather than concrete classes
+
+keyboard Interface
+wiredKeyboard (Implement Classes)
+bluetooth Keyboard (Implement Classes)
+
+Mouse Interface
+WiredMouse(Implements Class)
+Bluetooth Mouse(Implements Class)
+
+//This is not following dependency inversion principle it is depend to concrete classes which is tighly coupled
+suppose in future of any new class implements keyboard or mouse and we want to used that we have to make changes in the code
+class MacBook {
+
+    private final WiredKeyboard keyboard;
+    private final WiredMouse mouse;
+
+    public MacBook() {
+        keyboard = new WiredKeyboard();
+        mouse = new WiredMouse();
+    }
+}
+//This is following Dependency inversion principle
+
+class MacBook {
+
+    private final Keyboard keyboard;
+    private final Mouse mouse;
+
+    public MacBook(Keyboard keyboard,Mouse mouse) {
+        this.keyboard = keyboard;
+        this.mouse = mouse;
+    }
+}
+
+

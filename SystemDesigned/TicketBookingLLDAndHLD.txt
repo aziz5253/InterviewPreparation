@@ -1,0 +1,29 @@
+Functional Requirement
+USer should be able to search and event based on some title,location and date
+User should be able to view details of the event (seat,description,Metadata)
+User Should be able to do booking for that event
+
+Non Functional Requirements
+Scal 100 Million active user
+Highly available with respect of searching and viewing an event and highly consistent
+with respect to booking a particular ticket
+
+User
+Event (Movie/Concert)
+Venue (Hall/Location)
+Ticket
+
+3)Api Search
+Get :/v1/search?q={searchTerm}&location={location}&date={date}->List<EventId>:Pagination
+Get :/v1/event/{eventId}->EventDetails & Location & List<Seat>
+Post:/v1/booking/reserve
+{
+List<Seat> seats;
+}
+header having userId;->bookingId
+
+/v1/booking/confirm{
+bookingid,paymentdetails
+}
+
+

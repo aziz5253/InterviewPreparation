@@ -1,0 +1,48 @@
+Strategy Design pattern
+
+Vehicle Base Class
+drive(){
+normal drive capbility
+}
+
+passenger vehicle same as base class
+
+Sporty Vehicle
+drive{
+}
+
+OffRoad vehicle{
+drive{
+//special capability
+}
+}
+//Solution
+Vehicle has a Drive Strategy
+Vehicle class{
+DriveStrategy d;
+Vehicle(DriveStrategy d){
+this.d=d;
+}
+drive(){
+obj.drive();
+}
+}
+PassengerVehicle extends Vehicle
+{
+DriveStrategy ns;
+public PassengerVehicle(DriveStrategy driveStrategy){
+this.ns=driveStrategy;
+}
+}
+
+DriveStrategy interface{
+drive();
+}
+
+NormalDrive implements DriveStrategy{
+drive(){
+}
+SpecialDrive implements DriveStrategy{
+drive(){
+}
+}
