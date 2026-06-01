@@ -1,0 +1,560 @@
+Design Pattern
+SOLID Principle
+Single responsibility principle
+Class should have Single Responsibility 
+There should be not more than one reason for a class to change
+class UserService {
+    
+    public void createUser(String name) {
+        // Business logic
+        System.out.println("User created: " + name);
+
+        // Saving to DB (Persistence Responsibility)
+        saveToDatabase(name);
+
+        // Sending notification (Another responsibility)
+        sendEmail(name);
+    }
+
+    private void saveToDatabase(String name) {
+        System.out.println("Saved to DB");
+    }
+
+    private void sendEmail(String name) {
+        System.out.println("Email sent");
+    }
+}
+DB change → modify class
+Email logic change → modify class
+Business rule change → modify class
+//Business Logic
+class UserService{
+private UserRepository userRepository;
+private NotificationService notificationService;
+
+public UserService(UserRepository userRepository,NotificationService notificationService){
+this.userRepository=userRepository;
+this.notificationService=notificationService;
+}
+public void createUser(String name){
+userRepository.save(name);
+notificationService.send(name);
+}
+}
+//Save to db
+
+class UserRepository {
+    public void save(String name) {
+        System.out.println("Saved to DB");
+    }
+}
+//Send NotificationService
+class NotificationService{
+public void sendEmail(String name) {
+        System.out.println("Email sent");
+    }
+}
+
+2)Open closed Principle
+Software entities such as classes modules methods etc should be open for
+extension but closed for modification
+
+Open for Extension means Extends existing behaviour
+Closed for Modification Existing  code remains unchanged
+
+class PaymentService{
+public void proceessPayment(String type){
+
+ if (type.equals("CREDIT_CARD")) {
+            System.out.println("Processing credit card payment");
+        } else if (type.equals("UPI")) {
+            System.out.println("Processing UPI payment");
+        } else if (type.equals("NET_BANKING")) {
+            System.out.println("Processing net banking payment");
+        }
+
+}
+}
+🚨 Problem:
+Every time a new payment method is added (e.g., Wallet, Crypto)
+You must modify existing code
+Risk of breaking existing logic
+
+Create Abstraction
+
+public interface PaymentProcessor{
+void process();
+}
+
+class CreditCard implements PaymentProcessor{
+public void process(){
+System.out.println("Processing Credit Card Payment");
+}
+}
+
+class UpiPayment implements PaymentProcessor{
+public void process(){
+System.out.println("UpiPayment");
+}
+}
+
+
+class NetBankingPayment implements PaymentProcessor {
+    public void process() {
+        System.out.println("Processing net banking payment");
+    }
+}
+
+Use Abstraction
+class PaymentService{
+public PaymentService(PaymentProcessor p){
+p.process();
+}
+}
+//Usage
+PaymentService p=new PaymentService();
+p.proceessPayment(new CreditCardPayment());
+p.processPayment(new UpiPayment());
+p.processPayment(new NetBankingPayment());
+
+
+@Component
+public class PaymentFactory {
+
+    private Map<String, PaymentProcessor> processors;
+
+    public PaymentFactory(List<PaymentProcessor> processorList) {
+        processors = new HashMap<>();
+        processorList.forEach(p -> 
+            processors.put(p.getClass().getSimpleName(), p));
+    }
+
+    public PaymentProcessor getProcessor(String type) {
+        return processors.get(type);
+    }
+}
+3)Lisknov Substitution Principle
+We should able to subtitute the base class object with child class object adn this should not alter behaviour characteritics of program
+
+class Rectancgle{
+int width;
+int height;
+
+public Rectancgle(int width,int height){
+this.width=width;
+this.height=height;
+}
+
+//getter and setter
+public void computeArea(){
+return width*height;
+}
+
+}
+
+class Square extends Rectangle{
+public Square(int side){
+super(side,side);
+@Override
+public void setWidth(int width){
+setSide(width);
+}
+@Override
+public void setHeight(int height){
+setSide(height);
+}
+public void setSide(int side){
+super.setWidth(side);
+super.setHeight(side);
+}
+}
+}
+//breaking kiskno
+interface Shape{
+int computeArea();
+}
+class Rectangle implements Shape{
+int width;
+int height;
+
+public Rectancgle(int width,int height){
+this.width=width;
+this.height=height;
+}
+
+//getter and setter
+public void computeArea(){
+return width*height;
+}
+}
+class Square implements Shape{
+int size;
+
+
+public Square(int size){
+this.size=size;
+
+}
+
+//getter and setter
+public void computeArea(){
+return size*size;
+}
+}
+TestMamin
+Rectangle s=new Rectangle(20,30);
+rectangle.computeArea();
+
+Square s=new Square(10);
+s.computeArea();
+
+❌ BAD Design (Violates LSP)
+
+class Notification {
+    public void send(String message) {
+        System.out.println("Sending notification");
+    }
+}
+
+class EmailNotification extends Notification {
+    public void send(String message) {
+        System.out.println("Sending Email: " + message);
+    }
+}
+
+class SMSNotification extends Notification {
+    public void send(String message) {
+        throw new UnsupportedOperationException("SMS service unavailable");
+    }
+}
+
+🚨 Problem
+
+SMSNotification breaks expected behavior
+Parent contract says → send() should work
+But subclass throws exception
+
+
+Notification notification = new SMSNotification();
+notification.send("Hi"); // 💥 runtime failure
+❌ Violates LSP
+
+
+public interface Notification {
+    void send(String message);
+}
+
+class EmailNotification implements Notification {
+    public void send(String message) {
+        System.out.println("Sending Email: " + message);
+    }
+}
+
+class SMSNotification implements Notification {
+    public void send(String message) {
+        System.out.println("Sending SMS: " + message);
+    }
+}
+
+
+
+public class NotificationService {
+
+    public void notifyUser(Notification notification) {
+        notification.send("Hello User");
+    }
+}
+
+
+NotificationService service = new NotificationService();
+
+service.notifyUser(new EmailNotification());
+service.notifyUser(new SMSNotification());
+
+
+
+4)Interface Segregation Principle
+
+Client should not forced to depend on the interfaces that they do not use
+
+
+interface UserService {
+    void createUser();
+    void deleteUser();
+    void updateUser();
+    void generateReport();
+}
+
+Admin need all operation
+
+Reporting module only need to generate Reporting
+
+External Api-only create and update
+
+All clients are forced to depend on unnecessary methods
+
+
+interface UserCreateService {
+    void createUser();
+}
+
+interface UserUpdateService {
+    void updateUser();
+}
+
+interface UserDeleteService {
+    void deleteUser();
+}
+
+interface ReportService {
+    void generateReport();
+}
+
+class AdminService implements UserCreateService, UserUpdateService, UserDeleteService {
+
+    public void createUser() { }
+    public void updateUser() { }
+    public void deleteUser() { }
+}
+
+class UserReportService implements ReportService {
+
+    public void generateReport() {
+        System.out.println("Generating report");
+    }
+}
+✅ No unused methods
+✅ No exceptions for unsupported features
+✅ Cleaner, modular design
+✅ Easier testing & maintainability
+
+
+interface OrderService {
+    void createOrder();
+    void cancelOrder();
+    Order getOrder();
+}
+
+interface OrderQueryService {
+ Order getOrder();
+}
+
+interface OrderCommandService {
+ void createOrder();
+    void cancelOrder();
+}
+
+5)Dependency Inversion Principle
+
+High level module should not depend upon low level modules both should depend upon abstractions
+
+Abstraction should not depend upon details.Details should depend upon abstractions.
+
+
+class EmailService {
+    public void sendEmail(String message) {
+        System.out.println("Sending Email: " + message);
+    }
+}
+
+class NotificationService {
+
+    private EmailService emailService = new EmailService();
+
+    public void notifyUser(String message) {
+        emailService.sendEmail(message);
+    }
+}
+❌ High-level module (NotificationService) depends directly on low-level module (EmailService)
+❌ Hard to:
+
+Replace Email with SMS / Kafka
+Unit test (tight coupling)
+Extend functionality
+//Create abstraction interface
+public interface MessageService{
+void send(String message);
+}
+
+class EmailService implements MessageService{
+
+public void send(String message) {
+        System.out.println("Sending Email: " + message);
+    }
+
+}
+
+
+class SMSService implements MessageService {
+    public void send(String message) {
+        System.out.println("Sending SMS: " + message);
+    }
+
+//High Level module depends on abstraction
+
+class NotificationService{
+private MessageService messageService;
+
+public NotificationService(MessageService messageService){
+this.messageService=messageService;
+}
+public void notifyUser(String message){
+messageService.send(message);
+}
+}
+//TestMain
+MessageService message=new EmailService();
+
+NotificationService service = new NotificationService(emailService);
+
+service.notifyUser("Hello");
+
+MessageService smsService = new SMSService();
+NotificationService smsNotification = new NotificationService(smsService);
+
+smsNotification.notifyUser("Hello");
+
+✅ Loose coupling
+✅ Easily extendable
+✅ Enables:
+
+Unit testing (mocking interface)
+Switching implementations (Email → Kafka)
+Clean architecture
+
+public interface MessageService {
+    void send(String message);
+}
+@Service
+class EmailService implements MessageService {
+    public void send(String message) {
+        System.out.println("Email sent");
+    }
+}
+@Service
+class KafkaService implements MessageService {
+    public void send(String message) {
+        System.out.println("Message sent to Kafka");
+    }
+}
+
+@Service
+class NotificationService {
+
+    private final MessageService messageService;
+
+    @Autowired
+    public NotificationService(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
+    public void notifyUser(String message) {
+        messageService.send(message);
+    }
+}
+Spring injects dependency automatically, so:
+
+High-level module doesn’t know implementation
+Completely decoupled system
+
+Creational Design Pattern
+
+Builder
+SimpleFactory
+Factory method
+Prototype
+Singleton
+AbstractFactory
+ObjectPool
+
+Process of creation of object and classess
+
+Structural Design Pattern-How classess or objects are arranged or composed
+
+Behavioural Design Pattern-It describes how classes and object interacts and communicate with each other
+
+Builder Design Pattern
+
+We have a complex process to construct an object involving multiple steps,then builder design pattern can help us
+
+In Builder we remove the logic related to object constructions from "client"
+code& abstract it in seperate classes
+UML Diagram
+1)Product -Final complex object that we want to create
+2)Builder - Provide interface for creating parts of the object-
+void build();
+Product getProduct();
+3)Concreate Builder -If your builder is an interface or abstract class concreate builder is an implementation of that builder
+void build();
+Product getProduct();
+Construct parts and assemble final Product 
+Keeps tracks of products it creates
+4)Director-Uses Builder to construct objects.Knows the steps and their sequence to build products
+
+//Builder
+package org.example.builder;
+
+public class User {
+
+    private final String name;
+    private final String email;
+    private final String phone;
+    private final String address;
+
+    private User(Builder builder) {
+        this.name = builder.name;
+        this.email = builder.email;
+        this.phone = builder.phone;
+        this.address = builder.address;
+    }
+
+    public static class Builder {
+
+        // Mandatory field
+        private final String name;
+
+        // Optional fields
+        private String email;
+        private String phone;
+        private String address;
+
+        public Builder(String name) {
+            this.name = name;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder phone(String phone) {
+            this.phone = phone;
+            return this;
+        }
+
+        public Builder address(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
+    }
+}
+Simple factory
+1)Product - Object of the class and it subclasses if needed
+2)SimpleFactory- Provide a static method to get instance of product subclass
+3)Client
+java.text.Numberformat class has instance method which is example of simpleFactory
+
+Abstract Factory
+Product->Base class or interface created by a factory method
+ConcreteProductA,ConcreateProductB implements the product interface or class
+Creator -Declares the abstract factory method additionally uses the factory method to create product
+ConcreateCreator-Implements factory method and return one of concrete product instance
+
+
+
+
+

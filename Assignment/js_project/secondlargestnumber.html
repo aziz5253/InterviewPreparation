@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Second Largest Number</title>
+</head>
+
+<body>
+
+<h2>Find Second Largest Number</h2>
+
+<input type="text" id="arrayInput" placeholder="Enter numbers (comma separated)">
+<button onclick="findSecond()">Find</button>
+
+<p id="result"></p>
+
+<script>
+function secondLargest(arr) {
+  if (arr.length < 2) {
+    return "Need at least 2 numbers";
+  }
+
+  let unique = [...new Set(arr)];
+  unique.sort((a, b) => b - a);
+
+  return unique[1];
+}
+
+function findSecond() {
+  let input = document.getElementById("arrayInput").value;
+
+  let arr = input.split(",").map(Number);
+
+  let result = secondLargest(arr);
+
+  document.getElementById("result").innerText =
+    "Second Largest Number: " + result;
+}
+</script>
+
+</body>
+</html>

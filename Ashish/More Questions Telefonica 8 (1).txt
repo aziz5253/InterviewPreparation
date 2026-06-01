@@ -1,0 +1,131 @@
+Java Questions
+
+Have you ever used Array in your project?
+Do you know the difference between Array and ArrayList?
+Give a situation where you should use Array and where you should use ArrayList.
+Do you know how ArrayList works and how it grows automatically?
+What is the underlying data structure of ArrayList?
+If we remove elements from ArrayList, what happens? Does it shrink?
+
+
+Code Review Question
+
+As a code reviewer, what are your code review comments for this snippet?
+
+
+Design/Implementation Question
+
+You have a database table with person info and account details — how would you implement the final output using Spring Boot, REST API, and JPA?
+Customer table is flat, but output is hierarchical — how will you transform it?
+When calling the description API inside loops, how will you avoid calling it 10,000 times? (Optimization question)
+
+
+Spring Data JPA Questions
+
+What are the things you have worked on in Spring JPA?
+If you have a composite key (personId, personName, accountId), how do you define it in entity?
+What is @EmbeddedId and @Embeddable?
+When finding by ID in composite key scenario, what should you pass?
+How do you execute native SQL queries in JPA?
+What is projection and how do you use it?
+
+
+Spring Transactional annotation
+
+--If method A inserts, method B inserts, and method C updates — but if C fails we should still commit A & B — how do you handle this?
+--If A & B insert and C (new transaction) updates the same record — what happens?
+
+GenAI Usage Question
+
+Do you have any experience using GenAI for code review or coding?
+How are you using GitHub Copilot?
+
+
+
+Java & Core Concepts
+
+In Java 8, have you ever used arrays?
+What is the difference between Array and ArrayList?
+How does ArrayList grow dynamically?
+If you need to create your own custom data structure like ArrayList, how would you implement dynamic resizing?
+When removing elements from ArrayList, does the internal array shrink?
+
+
+Spring Boot / JPA / Architecture
+
+Here is a scenario with a customer table (flat structure). How would you implement the transformation to hierarchical output using Spring Boot + JPA?
+How will you implement the required layers—entity, repository, service, controller?
+What methods will exist in each layer and what will they do?
+In JPA, how will you structure data so you can convert a flat table into nested (customer → accounts) output?
+Will you call the external “getDescriptionByCode” API 1000 times if 1000 rows exist? How will you optimize this?
+How do you use caching in Spring?
+If at some point you need to reload the cache, how will you do that?
+
+Transactional (Advanced Spring Transaction Management)
+
+You have 3 methods: A (insert), B (update), C (insert).
+If A or B fails → rollback.
+If C fails → commit.
+How will you implement this in Spring transactional behavior?
+What transaction propagation level would you use?
+If each method has its own @Transactional, will they run as separate transactions or part of one transaction?
+If method B fails and each method is separate transaction, will A’s data roll back?
+
+
+Interceptor, AOP, Logging
+
+You said you have worked with interceptors and AOP—what do they do?
+If you need to log every incoming REST API request using interceptor, how will you implement it?
+If you need to log entry/exit of every service or DAO method using AOP, how will you define the pointcuts and aspects?
+What annotations do you use for creating an aspect?
+How do you define which packages/classes the aspect applies to?
+
+
+Exception Handling
+
+If REST API throws 500 internal server error but you want to display a custom error message globally, how do you configure global exception handling in Spring Boot?
+
+
+Database:
+Customer Table:
+ 
+person_id person_name account_id account_type_code
+1         Soumik      1001       SAV
+1         Soumik      1002       CUR
+2         Amit        2001       SAV
+ 
+API
+ 
+getDescByCode("SAV");
+ 
+Final output:
+[
+  {
+    "personId": 1,
+    "name": "Soumik",
+    "accounts": [
+      {
+        "id": 1001,
+        "typeCode": "SAV",
+        "typeDescription": "Savings Account"
+      },
+      {
+        "id": 1002,
+        "typeCode": "CUR",
+        "typeDescription": "Current Account"
+      }
+    ]
+  },
+  {
+    "personId": 2,
+    "name": "Amit",
+    "accounts": [
+      {
+        "id": 2001,
+        "typeCode": "SAV",
+        "typeDescription": "Savings Account"
+      }
+    ]
+  }
+]
+ 

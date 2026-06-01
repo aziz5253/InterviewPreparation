@@ -1,0 +1,70 @@
+1. what is your experience in Microservices?
+2. Which technologies have you worked on?
+3. Explain your pervious organization project?
+4. How does my project architecture work technically?
+5. What Framework did I use in my project?
+6. How did you implement configuration between services?
+7. Find duplicate elements from list.
+8. Remove duplicates without using HashSet.
+9. Find unique elements from two lists.
+10. Find total price of products.
+11. What is stream API in java8?
+12. allMatch , anyMatch, noneMatch.
+13. does distinct() work on objects without equals/hashcode?
+14. How do you implement global exception handling?
+15.what we are doing common mistakes in exception handling?
+16. some question related to release branch like if production issue comes after deployment, what will you do?
+17. branching strategy?
+
+What is the Java Memory Model?
+How is Memory Management happening internally?                                                                             List Program Salary filter by 20000 and increase their salary by 20 percent use streams?                    
+
+
+ Write a spring boot program implementing composite key?          
+
+1. What is the return type of add method of HashSet and put method of Map.
+2. Hierarchy of primitive data type and if method contains Long type parameter and can we pass int value.
+3. What are the inbuild function in java 8 and its default methods.
+4. Convert List Of Employee to Map<EmpId, Employee> ex- List<Employee> to Map<Long,Employee>
+5. Find department wise average salary of Employee 
+	Map<String,Double> map =  list.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.averagingDouble(Employee::getSalary)));
+6. Find second highest salary of the employee
+	Optional<Map.Entry> mapEntry =  map.entrySet().stream().sorted(Comparator.comparingDouble(p->p.getValue).reversed()).skip(1).findFirst();
+7. Role and responsibility of last project. 
+8. What will be the output of below program
+public class test {
+    static void method1(Object o){ System.out.println("Object"); }
+    static void method1(String s){ System.out.println("String"); }
+    public static void main(String[] args){
+        method1(null); 
+    }
+}t
+
+
+Coding questions
+===============
+
+Nandkumar Shembade, Chandan
+@Service class EmpService{    @Autowired private EmpRepo repo;     public Map<Integer, EMployee> getEMpdetails(){     Map<Integer, Employee> map;     List<Employee> empList = repo.findAll();     empL…
+In the Map Employee Id as a key and Employee Object as value
+ 
+Nandkumar Shembade, Chandan
+TreeSet<Employee> empList = new Treeset(){   emp.salary().reversed() };     Map<String, Double> map = empList.stream().collect(COllectors.groupingBy(Employee::getDept), Collectors.summasationtoDouble…
+Print Employee on the basis of Salary Des
+ 
+public class test {
+
+    static void method1(Integer i){ System.out.println("Integer"); }
+
+    static void method1(Long l){ System.out.println("Long"); }
+
+    public static void main(String[] args){
+
+        method1(null); // ?
+
+    }
+
+}
+ 
+what is spring data jpa and its methods ?
+ 

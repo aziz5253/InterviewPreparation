@@ -1,0 +1,72 @@
+Introduce yourself
+Multithreading
+What are different ways to create thread
+Find unique values from table
+explain project architecture
+Performance issue that you have fixed after from sql query
+Suggestion you provide to stakeholders for application
+sequence diagram, activity diagram
+what are the steps to follow if issue occurred on production but not in lower env
+Explain event driven architecture
+why to use apache kafka?
+
+introduce yourself
+explain previous project
+how much team handled
+what challenges you have faced and how you have solved it.
+if conflict within team members then how you have handled it.
+how microservices commincate with each other.
+which legacy application you have wokred on what was the technology stack.
+why sring boot application is preferred over legacy application.
+how you have handled the client.
+Day-to-day task in previous project.
+
+project architecture
+microservice architecture
+jpa vs orm
+sql query
+Print values starting with S from a list of string
+hashmap internal working
+
+Previous projects and its architecture
+Microservices architecture
+java 21 features
+Testing Framework
+Queue vs topic
+Circuit breaker
+
+Discussion related to last project
+your role in project and question related to agile and scrum 
+Have you worked on testing, which framework you have used
+how to write test cases for repository(for testing did you used H2 db or main db)
+Explain spring lifecycle
+spring beans scopes
+Explain @Postconstruct
+If you are getting data In JSON format and you want to return result in XML format, how you will implement this scenario? 
+have you worked on any MQ(Kafka/RabbitMQ), explain it
+what is inner join and outer join
+Explain @transactional
+what is difference between authentication and authorization, how you implemented it in your project
+what is difference between HTTP and HTTPS, what it does and how do you implement it
+
+Spring Container Starts
+   ↓
+Bean Instantiation
+   ↓
+Dependency Injection
+   ↓
+Aware Interfaces
+   ↓
+BeanPostProcessor (Before Init)
+   ↓
+@PostConstruct
+   ↓
+InitializingBean / init-method
+   ↓
+Bean Ready for Use
+   ↓
+Container Shutdown
+   ↓
+@PreDestroy
+   ↓
+DisposableBean / destroy-metho

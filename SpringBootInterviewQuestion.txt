@@ -1,0 +1,645 @@
+Spring Boot Interview Questions & Answers (9+ Years Experience)
+1. What are the advantages of Spring Boot over traditional Spring Framework?
+
+Answer:
+Spring Boot simplifies Spring application development by providing:
+
+Auto-configuration – Automatically configures beans based on classpath dependencies.
+Embedded servers – Tomcat, Jetty, Undertow included; no WAR deployment required.
+Starter dependencies – Simplifies dependency management.
+Production-ready features – Actuator, metrics, health checks.
+Opinionated defaults – Reduces boilerplate configuration.
+Externalized configuration – Supports YAML, properties, env variables, config servers.
+Rapid development – Minimal XML configuration.
+
+For enterprise systems, Spring Boot significantly reduces setup time and improves maintainability.
+
+2. Explain Spring Boot Auto Configuration.
+
+Answer:
+Auto Configuration automatically configures Spring beans based on:
+
+Dependencies available in classpath
+Existing bean definitions
+Application properties
+
+It works using:
+
+@EnableAutoConfiguration
+spring.factories / AutoConfiguration.imports
+Conditional annotations:
+@ConditionalOnClass
+@ConditionalOnMissingBean
+@ConditionalOnProperty
+
+Example:
+If spring-boot-starter-data-jpa is present, Spring Boot auto-configures:
+
+DataSource
+EntityManager
+TransactionManager
+
+We can exclude configurations using:
+
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+3. Difference between @Component, @Service, @Repository, and @Controller?
+
+Answer:
+
+Annotation	Purpose
+@Component	Generic Spring bean
+@Service	Business logic layer
+@Repository	DAO layer + exception translation
+@Controller	MVC Controller
+@RestController	REST APIs
+
+All are specialization of @Component.
+
+4. Explain Bean Scopes in Spring.
+
+Answer:
+
+Scope	Description
+Singleton	One bean per container (default)
+Prototype	New bean every request
+Request	One bean per HTTP request
+Session	One bean per HTTP session
+Application	Shared across application
+Websocket	WebSocket lifecycle
+
+Example:
+
+@Scope("prototype")
+@Component
+public class MyBean {
+}
+5. What is dependency injection? Types?
+
+Answer:
+Dependency Injection (DI) is a design pattern where objects receive dependencies externally.
+
+Types:
+Constructor Injection (recommended)
+Setter Injection
+Field Injection (not recommended)
+
+Preferred:
+
+@Service
+public class UserService {
+
+    private final UserRepository repo;
+
+    public UserService(UserRepository repo) {
+        this.repo = repo;
+    }
+}
+
+Benefits:
+
+Loose coupling
+Easier unit testing
+Better immutability
+6. What happens internally when Spring Boot application starts?
+
+Answer:
+Key startup sequence:
+
+SpringApplication.run()
+Create ApplicationContext
+Environment preparation
+Load auto-configurations
+Component scanning
+Bean creation
+Embedded server startup
+Execute runners (CommandLineRunner)
+Application ready event published
+
+Important interfaces:
+
+BeanFactory
+ApplicationContext
+DispatcherServlet
+7. Explain Spring Boot Starters.
+
+Answer:
+Starters are pre-configured dependency bundles.
+
+Examples:
+
+Starter	Purpose
+spring-boot-starter-web	REST + Tomcat
+spring-boot-starter-data-jpa	JPA/Hibernate
+spring-boot-starter-security	Security
+spring-boot-starter-actuator	Monitoring
+spring-boot-starter-test	Testing
+
+Benefits:
+
+Version compatibility
+Reduced dependency conflicts
+8. Difference between @Bean and @Component?
+
+Answer:
+
+@Bean	@Component
+Used in @Configuration class	Used directly on class
+Explicit bean creation	Auto-detected
+Third-party classes supported	Only source-controlled classes
+
+Example:
+
+@Bean
+public ObjectMapper mapper() {
+    return new ObjectMapper();
+}
+9. Explain Spring Boot Profiles.
+
+Answer:
+Profiles are used for environment-specific configuration.
+
+Example:
+
+dev
+qa
+prod
+
+Activation:
+
+spring.profiles.active=prod
+
+Profile-specific files:
+
+application-dev.yml
+application-prod.yml
+
+Usage:
+
+@Profile("prod")
+@Service
+public class ProdPaymentService {
+}
+10. What is Actuator?
+
+Answer:
+Spring Boot Actuator provides production-ready monitoring features.
+
+Endpoints:
+
+/actuator/health
+/actuator/metrics
+/actuator/info
+/actuator/env
+/actuator/prometheus
+
+Used for:
+
+Monitoring
+Health checks
+Metrics
+Kubernetes readiness/liveness probes
+11. Explain Spring Boot Security Architecture.
+
+Answer:
+Spring Security works using filter chain architecture.
+
+Core Components:
+
+Authentication
+Authorization
+SecurityContext
+UserDetailsService
+JWT/OAuth2
+
+Flow:
+
+Request enters filter chain
+Authentication filter validates token
+SecurityContext populated
+Authorization checks performed
+
+Modern approach:
+
+@Bean
+SecurityFilterChain security(HttpSecurity http) throws Exception {
+    return http
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/public/**").permitAll()
+            .anyRequest().authenticated())
+        .build();
+}
+12. How do you implement JWT authentication?
+
+Answer:
+
+Flow:
+
+User logs in
+Generate JWT token
+Client sends token in Authorization header
+Filter validates JWT
+Authentication stored in SecurityContext
+
+Header:
+
+Authorization: Bearer eyJhbGci...
+
+Best practices:
+
+Short expiry
+Refresh tokens
+Use asymmetric keys in production
+Avoid storing sensitive data in token
+13. Difference between Monolithic and Microservices Architecture?
+
+Answer:
+
+Monolith	Microservices
+Single deployable unit	Multiple independent services
+Easier initially	Better scalability
+Tight coupling	Loose coupling
+Shared DB common	Decentralized DB
+Harder scaling	Independent scaling
+
+Microservices require:
+
+API Gateway
+Service Discovery
+Distributed tracing
+Centralized logging
+Resilience patterns
+14. How do you handle distributed transactions in microservices?
+
+Answer:
+Avoid 2PC in microservices due to scalability/performance issues.
+
+Preferred patterns:
+
+Saga Pattern
+Event-driven architecture
+Outbox Pattern
+Idempotency
+
+Saga approaches:
+
+Choreography
+Orchestration
+
+Tools:
+
+Kafka
+Debezium
+Camunda
+Temporal
+15. What is Circuit Breaker pattern?
+
+Answer:
+Prevents cascading failures in distributed systems.
+
+States:
+
+Closed
+Open
+Half-open
+
+Implementation using Resilience4j:
+
+@CircuitBreaker(name = "payment-service")
+public Payment getPayment() {
+    return client.call();
+}
+
+Benefits:
+
+Fault tolerance
+Faster recovery
+Prevents thread exhaustion
+16. Explain Spring Cloud components.
+
+Answer:
+
+Component	Purpose
+Eureka	Service Discovery
+Config Server	Centralized config
+Gateway	API Gateway
+OpenFeign	REST client
+Sleuth/Micrometer	Tracing
+Resilience4j	Fault tolerance
+17. How do you optimize Spring Boot performance?
+
+Answer:
+
+JVM
+Tune heap
+G1GC/ZGC
+Analyze heap dumps
+Database
+Connection pooling (HikariCP)
+Proper indexing
+Batch processing
+Application
+Lazy loading
+Caching
+Async processing
+Pagination
+Monitoring
+APM tools
+Actuator metrics
+Thread dump analysis
+18. Explain caching in Spring Boot.
+
+Answer:
+Spring supports abstraction-based caching.
+
+Annotations:
+
+@Cacheable
+@CachePut
+@CacheEvict
+
+Example:
+
+@Cacheable("users")
+public User getUser(Long id) {
+    return repository.findById(id);
+}
+
+Popular providers:
+
+Redis
+Ehcache
+Caffeine
+19. What is the difference between synchronous and asynchronous communication?
+
+Answer:
+
+Synchronous	Asynchronous
+Blocking	Non-blocking
+Immediate response	Event-driven
+REST common	Kafka/RabbitMQ common
+Tight coupling	Loose coupling
+
+Use async for:
+
+Notifications
+Order processing
+Analytics
+High throughput systems
+20. Explain Kafka integration with Spring Boot.
+
+Answer:
+
+Producer:
+
+kafkaTemplate.send("orders", order);
+
+Consumer:
+
+@KafkaListener(topics = "orders")
+public void consume(Order order) {
+}
+
+Key concepts:
+
+Topic
+Partition
+Consumer Group
+Offset
+
+Enterprise concerns:
+
+Retry
+DLQ
+Idempotency
+Exactly-once semantics
+21. How do you handle exception globally?
+
+Answer:
+
+Using @ControllerAdvice:
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handle(Exception ex) {
+        return ResponseEntity.internalServerError().body(ex.getMessage());
+    }
+}
+
+Benefits:
+
+Centralized handling
+Standard error response
+Cleaner controllers
+22. Explain transaction propagation levels.
+
+Answer:
+
+Propagation	Description
+REQUIRED	Default
+REQUIRES_NEW	New transaction
+SUPPORTS	Use existing if present
+MANDATORY	Existing required
+NEVER	No transaction allowed
+
+Example:
+
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+23. How does Spring Boot support observability?
+
+Answer:
+Using:
+
+Micrometer
+Prometheus
+Grafana
+OpenTelemetry
+Distributed tracing
+
+Metrics:
+
+JVM
+HTTP latency
+DB calls
+Kafka lag
+
+Tracing tools:
+
+Zipkin
+Jaeger
+24. What challenges have you faced in production?
+
+Answer (Sample):
+Some real-world production challenges:
+
+Memory leaks
+Thread pool exhaustion
+DB connection saturation
+Kafka consumer lag
+Circular dependencies
+Slow APIs
+Distributed tracing complexity
+
+Approach:
+
+Monitoring
+RCA
+Mitigation
+Permanent fix
+Postmortem
+25. Explain your current architecture.
+
+Answer Structure:
+For 9+ years, interviewers expect architecture-level discussion.
+
+Include:
+
+System scale
+Microservices count
+Traffic volume
+Database design
+Caching
+Messaging
+Security
+CI/CD
+Cloud setup
+Monitoring
+High availability
+Disaster recovery
+
+Example:
+
+“We have around 40 microservices deployed on Kubernetes using Spring Boot, Kafka, Redis, PostgreSQL, and AWS. APIs are routed through API Gateway with OAuth2 authentication…”
+
+Advanced Scenario-Based Questions
+26. How do you reduce API response time from 5 seconds to 500ms?
+
+Answer:
+Approach:
+
+Analyze DB queries
+Add indexes
+Use caching
+Remove N+1 issues
+Async parallel calls
+Pagination
+Tune thread pools
+Use Redis
+27. How do you prevent duplicate Kafka message processing?
+
+Answer:
+Techniques:
+
+Idempotency key
+Unique DB constraints
+Processed event table
+Offset management
+Exactly-once semantics
+28. Explain Blue-Green and Canary deployments.
+
+Answer:
+
+Deployment	Description
+Blue-Green	Two identical environments
+Canary	Gradual rollout
+
+Benefits:
+
+Reduced downtime
+Safer deployments
+Easy rollback
+29. How do you secure microservices?
+
+Answer:
+Security layers:
+
+OAuth2/JWT
+API Gateway security
+mTLS
+Rate limiting
+RBAC
+Secrets management
+Network policies
+30. Difference between optimistic and pessimistic locking?
+
+Answer:
+
+Optimistic	Pessimistic
+Version based	DB lock based
+Better scalability	Strong consistency
+Less blocking	More blocking
+
+JPA Example:
+
+@Version
+private Long version;
+Common HR + Leadership Questions for 9+ Years
+31. How do you mentor junior developers?
+
+Answer:
+
+Code reviews
+Design discussions
+Pair programming
+Best practices
+Ownership culture
+32. How do you handle production incidents?
+
+Answer:
+
+Assess severity
+Mitigate impact
+Communicate stakeholders
+RCA
+Prevent recurrence
+33. Have you led architecture decisions?
+
+Answer:
+Mention:
+
+Technology evaluation
+Scalability decisions
+Migration strategies
+Cost optimization
+Performance improvements
+Frequently Asked Rapid-Fire Questions
+Difference between @RestController and @Controller
+@Primary vs @Qualifier
+HashMap vs ConcurrentHashMap
+Checked vs unchecked exceptions
+Comparable vs Comparator
+Bean lifecycle
+Spring Boot startup optimization
+CAP theorem
+SQL vs NoSQL
+Docker vs Kubernetes
+Stateful vs Stateless services
+API Gateway benefits
+Horizontal vs Vertical scaling
+Tips for 9+ Years Interviews
+
+Interviewers usually evaluate:
+
+Technical Depth
+Internals
+Performance
+Scalability
+Distributed systems
+Architectural Thinking
+Design patterns
+Trade-offs
+Reliability
+Leadership
+Mentoring
+Ownership
+Incident handling
+Real Experience
+
+Be ready with:
+
+Production issues solved
+Migration stories
+Optimization examples
+High-scale architecture discussions

@@ -1,0 +1,159 @@
+Theoretical and conceptual questions
+========================================
+→ Difference between a synchronized block and a synchronized method
+→ Where have you used a synchronized block and a synchronized method?
+→ Difference between map and flatMap
+→ Where do we use map and where do we use flatMap?
+→ Do you know the latest updates in Java 17 compared to Java 8?
+→ In Microservices, which service discovery mechanism have you used?
+→ In Microservices, how do you track logs across different services?
+→ Where have you used the security layer in Microservices?
+→ Transaction Isolation and Propagation — in which scenarios are they used?
+→ How is security implemented in your project?
+→ How do you write an async API in Spring Boot?
+→ If we need to generate a report through a REST API call but run the processing in the background, what strategies would you use?
+→ What are the different levels of transaction propagation used in Spring Boot?
+→ Internal implementation of ArrayList — how does it grow dynamically?
+→ In a Map, is it mandatory for the key to be immutable? If not, what happens if you use a mutable key?
+→ How do you handle an OutOfMemoryError in production? What steps do you follow?
+→ If many concurrent users are calling the API and response time increases, what measures will you take to improve performance?
+→ Difference between an array and an ArrayList
+→ Internal working of ArrayList — how it grows dynamically
+→ If Method A calls Method B, and Method B calls Method C, and Method C throws an exception that must propagate back to B and then to A, how will you pass additional information along with the exception?
+→ What is @Qualifier?
+→ How are exceptions handled in Spring Boot?
+
+
+Coding questions
+================
+1. create singleton class
+2. make that singleton class synchronize
+3. recursive function using stream API
+4. write a program to print duplicate item from list by using stream api.
+5. You have a Product class that contains:
+id → unique identifier
+price → price of that product
+List subProducts → a list of child products (nested products inside this product)
+
+✔ Goal
+Calculate the total price of a product by adding:
+
+The product’s own price
+The price of all its subProducts
+The price of all nested (recursive) subProducts inside those subProducts
+
+6.
+Class Employee {
+          firstname, lastname, Address adress
+ 
+}
+ 
+Class Address {
+      String primary
+       String secondary
+}
+
+7. class Employee {
+   firstname, lastname, Long salary
+}
+ 
+Employee to be stored in collection where data is stored in sorted order with descending salary
+
+8. List program: Salary filter by 20,000 and increase their salary by 20 percent using streams” means:
+
+You have a list of Employee objects.
+You must filter only those employees whose salary is > 20,000.
+For each filtered employee, increase the salary by 20%.
+Return/print the updated list using Java 8 Streams.
+
+
+ 
+Scenario Based questions
+=======================
+1. 
+public class test {
+    static void method1(Object o){ System.out.println("Object"); }
+    static void method1(String s){ System.out.println("String"); }
+    public static void main(String[] args){
+        method1(null); 
+    }
+}
+ 
+2. 
+public class test {
+    static void method1(Integer i){ System.out.println("Integer"); }
+    static void method1(Long l){ System.out.println("Long"); }
+    public static void main(String[] args){
+        method1(null); // ?
+    }
+}
+ 
+3.
+public class Autobox {
+    public static void main(String[] args){
+        Integer a = 127, b = 127;
+        Integer c = 128, d = 128;
+        System.out.println(a == b); // ?
+        System.out.println(c == d); // ?
+        System.out.println(c.equals(d)); // ?
+    }
+}
+ 
+4.
+class Parent {
+   public void publicMethod() {
+       privateMethod();
+   }
+ 
+   private void privateMethod() {
+       System.out.println("Parent private method");
+   }
+}
+ 
+class Child extends Parent {
+   public void privateMethod() {
+       System.out.println("Child public method");
+   }
+}
+ 
+Child c = new Child();
+c.publicMethod();
+ 
+5.
+class Parent {
+   public void publicMethod() {
+       privateMethod();
+   }
+ 
+   private void privateMethod() {
+       System.out.println("Parent private method");
+   }
+}
+ 
+class Child extends Parent {
+   public void privateMethod() {
+       System.out.println("Child public method");
+   }
+}
+ 
+ 
+6.
+String str1 = "Sandeep";
+String str2 = "Sandeep";
+String str3 = new String("Sandeep");
+ 
+System.out.println(str1 == str2);  
+System.out.println(str1 == str3); 
+System.out.println(str1.equals(str3)); 
+ 
+String str1 = "Happy" + "New Year"
+str1.concat("2026")
+ System.out.println(str1);
+ 
+ 
+8.
+Set<String> fruits = new TreeSet()
+fruits. Add(null)
+fruits. Add("Mango")
+ 
+ 

@@ -1,0 +1,1376 @@
+
+Get responses tailored to you
+
+Log in to get answers based on saved chats, plus create images and upload files.
+
+
+Log in
+JWT token in detailed with spring boot explain each and every term in layman language
+
+A JWT (JSON Web Token) is a compact, secure way to transfer information between two parties — usually between a client (browser/mobile app) and a server (Spring Boot backend).
+
+Think of JWT like a digital ID card.
+
+When you log in:
+
+The server verifies your username/password.
+
+The server creates a JWT token.
+
+The client stores it.
+
+Every future request sends that token.
+
+The server checks whether the token is valid.
+
+1. Why JWT Exists
+Before JWT, many applications used session-based authentication.
+
+Session-Based Authentication
+User logs in.
+
+Server creates a session in memory/database.
+
+Server sends session ID.
+
+Browser stores session ID in cookies.
+
+Every request sends the session ID.
+
+Problem:
+
+Server must store sessions.
+
+Hard to scale in distributed systems/microservices.
+
+JWT solves this because:
+
+The server does not need to store session data.
+
+Token itself contains user information.
+
+This is called:
+
+Stateless Authentication
+“Stateless” means:
+
+Server does not remember previous requests.
+
+Every request contains all needed information.
+
+2. What JWT Stands For
+JWT =
+
+Letter	Meaning
+J	JSON
+W	Web
+T	Token
+3. What is JSON?
+JSON means:
+
+JavaScript Object Notation
+Simple data format.
+
+Example:
+
+{
+  "username": "rahul",
+  "role": "ADMIN"
+}
+JWT stores data in JSON format internally.
+
+4. Structure of JWT
+A JWT has 3 parts:
+
+HEADER.PAYLOAD.SIGNATURE
+Example:
+
+eyJhbGciOiJIUzI1NiJ9
+.
+eyJzdWIiOiJyYWh1bCJ9
+.
+abcxyz123
+Each part has meaning.
+
+5. JWT Header
+Header contains metadata about the token.
+
+Example:
+
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+Meaning:
+
+Key	Meaning
+alg	Algorithm used for signature
+typ	Token type
+What is Algorithm?
+Algorithm means:
+A mathematical method used to secure the token.
+
+Example:
+
+HS256
+
+RS256
+
+HS256 Explained
+HS = HMAC SHA
+
+Uses:
+
+Secret key
+
+Hashing algorithm
+
+Simple idea:
+
+Server signs token using secret key.
+
+Server verifies token using same secret key.
+
+6. Payload
+Payload contains actual data.
+
+Example:
+
+{
+  "sub": "rahul",
+  "role": "ADMIN",
+  "exp": 1712345678
+}
+Common JWT Terms
+Term	Meaning
+sub	Subject (usually username/user ID)
+role	User role
+exp	Expiration time
+iat	Issued at
+iss	Issuer
+aud	Audience
+Layman Example
+Imagine airport security:
+
+JWT Field	Real Life Example
+sub	Passenger name
+role	Economy/Business
+exp	Ticket expiry
+iss	Airline company
+7. Signature
+This is the most important security part.
+
+Created using:
+
+HEADER + PAYLOAD + SECRET_KEY
+Purpose:
+
+Prevent tampering.
+
+Ensure data integrity.
+
+Tampering Example
+Suppose user changes:
+
+"role": "USER"
+to
+
+"role": "ADMIN"
+Signature becomes invalid.
+
+Server immediately rejects token.
+
+8. Base64 Encoding
+JWT parts are encoded using Base64URL.
+
+Example:
+
+{
+  "sub": "rahul"
+}
+becomes:
+
+eyJzdWIiOiJyYWh1bCJ9
+Important:
+
+Encoding ≠ Encryption
+
+Anyone can decode JWT payload.
+
+Never store:
+
+Passwords
+
+Sensitive data
+
+inside JWT.
+
+9. Authentication vs Authorization
+Very important.
+
+Concept	Meaning
+Authentication	Who are you?
+Authorization	What can you access?
+Example
+Authentication:
+
+Username + Password
+Authorization:
+
+Can access ADMIN APIs?
+JWT helps in both.
+
+10. JWT Flow in Spring Boot
+Complete flow:
+
+1. User logs in
+2. Spring Boot validates credentials
+3. Spring Boot creates JWT
+4. JWT sent to client
+5. Client stores JWT
+6. Client sends JWT in every request
+7. Spring Security validates JWT
+8. Access granted
+11. Authorization Header
+Client sends JWT like this:
+
+Authorization: Bearer <token>
+What is Bearer?
+Bearer means:
+
+“Whoever carries this token is considered authenticated.”
+
+Like carrying a movie ticket.
+
+12. Spring Security Role
+Spring Security handles:
+
+Authentication
+
+Authorization
+
+JWT validation
+
+Filters
+
+Security context
+
+Official docs:
+
+Spring Security Documentation
+
+13. Important Spring Security Terms
+UserDetailsService
+Loads user data from database.
+
+Example:
+
+loadUserByUsername()
+Purpose:
+
+Fetch user
+
+Fetch password
+
+Fetch roles
+
+PasswordEncoder
+Encrypts passwords.
+
+Example:
+
+BCryptPasswordEncoder
+Never store plain passwords.
+
+BCrypt
+A hashing algorithm for passwords.
+
+Example:
+
+password123
+becomes:
+
+$2a$10$abcxyz...
+One-way encryption:
+
+Cannot reverse easily.
+
+14. JWT Filter
+A filter checks every incoming request.
+
+Flow:
+
+Request arrives
+↓
+JWT filter checks token
+↓
+Valid token?
+↓
+Yes → continue
+No → reject
+15. SecurityContext
+Spring Security stores authenticated user information here.
+
+Think of it as:
+
+“Current logged-in user memory.”
+
+16. Claims
+Claims = information inside payload.
+
+Example:
+
+{
+  "username": "rahul",
+  "role": "ADMIN"
+}
+These are claims.
+
+Types of Claims
+Type	Meaning
+Registered	Standard claims
+Public	Custom shared claims
+Private	App-specific claims
+17. Access Token
+Short-lived JWT.
+
+Example:
+
+Valid for 15 minutes
+
+Purpose:
+
+Access APIs
+
+18. Refresh Token
+Long-lived token.
+
+Example:
+
+Valid for 7 days
+
+Purpose:
+
+Generate new access token without login.
+
+Why Refresh Token?
+Security.
+
+If access token is stolen:
+
+Damage duration is limited.
+
+19. Expiration (exp)
+Controls token validity time.
+
+Example:
+
+"exp": 1712345678
+After expiration:
+
+Token rejected.
+
+20. Secret Key
+Very critical.
+
+Example:
+
+mySuperSecretKey123
+Used to:
+
+Sign token
+
+Verify token
+
+Never expose it publicly.
+
+21. JWT Utility Class in Spring Boot
+Usually contains:
+
+Generate token
+
+Validate token
+
+Extract username
+
+Extract claims
+
+Example:
+
+generateToken()
+validateToken()
+extractUsername()
+22. JWT Authentication Filter
+Responsibilities:
+
+Read Authorization header
+
+Extract JWT
+
+Validate JWT
+
+Set authentication in SecurityContext
+
+23. OncePerRequestFilter
+Spring class ensuring filter runs once per request.
+
+Official docs:
+
+Spring Framework Documentation
+
+24. AuthenticationManager
+Responsible for authenticating users.
+
+Checks:
+
+Username
+
+Password
+
+25. DAO Authentication Provider
+DAO = Data Access Object
+
+Purpose:
+
+Fetch user from DB
+
+Verify password
+
+26. Stateless Session Policy
+In Spring Security:
+
+SessionCreationPolicy.STATELESS
+Meaning:
+
+No server-side sessions.
+
+27. CSRF
+CSRF = Cross-Site Request Forgery
+
+JWT APIs often disable CSRF because:
+
+APIs are stateless.
+
+28. Why JWT is Popular
+Advantages:
+
+Advantage	Explanation
+Stateless	No session storage
+Scalable	Good for microservices
+Fast	No DB lookup every request
+Portable	Works across systems
+29. JWT Disadvantages
+Problem	Explanation
+Cannot easily revoke	Until expiry
+Token size bigger	More data
+If stolen → dangerous	Bearer token risk
+30. JWT vs Session
+Feature	Session	JWT
+Server stores state	Yes	No
+Scalability	Medium	High
+DB/session store needed	Yes	No
+Mobile-friendly	Less	More
+31. Typical Spring Boot JWT Project Structure
+src/main/java
+ ├── config
+ ├── controller
+ ├── service
+ ├── repository
+ ├── entity
+ ├── security
+ │     ├── JwtFilter
+ │     ├── JwtUtil
+ │     └── SecurityConfig
+32. Real Login Flow Example
+Step 1 — Login Request
+POST /login
+Body:
+
+{
+  "username": "rahul",
+  "password": "1234"
+}
+Step 2 — Spring Validates
+Using:
+
+UserDetailsService
+
+PasswordEncoder
+
+Step 3 — JWT Generated
+Example payload:
+
+{
+  "sub": "rahul",
+  "role": "USER",
+  "exp": 1712345678
+}
+Step 4 — Token Returned
+{
+  "token": "eyJhbGc..."
+}
+Step 5 — Client Uses Token
+Authorization: Bearer eyJhbGc...
+33. Important Interview Terms
+Term	Meaning
+JWT	Secure token format
+Claim	Data inside payload
+Signature	Prevent tampering
+Stateless	No session memory
+Bearer Token	Carry token for access
+Authentication	Identity verification
+Authorization	Permission checking
+Expiration	Token lifetime
+Refresh Token	Generate new access token
+34. Simple Real-Life Analogy
+Imagine a mall entry system.
+
+Login
+Security checks your ID.
+
+Token
+Mall gives you a wristband.
+
+Future Entry
+You show wristband instead of ID every time.
+
+Expiry
+Wristband valid only for today.
+
+Signature
+Fake wristband detection.
+
+That wristband is JWT.
+
+35. Modern Spring Boot JWT Libraries
+Common library:
+
+JJWT Library
+
+Another:
+
+Auth0 Java JWT
+
+36. Core JWT Concepts Summary
+Concept	Simple Meaning
+Token	Digital identity card
+Header	Token metadata
+Payload	User information
+Signature	Security seal
+Secret Key	Server’s private password
+Claims	Information inside token
+Access Token	Short-term access
+Refresh Token	Renew access
+Stateless	Server remembers nothing
+37. Recommended Learning Order
+Authentication vs Authorization
+
+Spring Security basics
+
+JWT structure
+
+Token generation
+
+Token validation
+
+Filters
+
+SecurityContext
+
+Access & refresh tokens
+
+Role-based authorization
+
+Microservices JWT flow
+
+38. Beginner Mistakes
+Mistake	Why Bad
+Storing password in JWT	Security risk
+Very long expiry	Dangerous if stolen
+Weak secret key	Easy attack
+Not using HTTPS	Token theft risk
+39. Best Practices
+✅ Use HTTPS
+✅ Use short expiry
+✅ Use refresh tokens
+✅ Store secrets securely
+✅ Use BCrypt for passwords
+✅ Validate tokens properly
+
+40. Final Understanding
+JWT is basically:
+
+A digitally signed identity card used for secure communication between client and server without storing session data on the server.
+
+In Spring Boot + Spring Security:
+
+Spring Security manages authentication.
+
+JWT carries user identity.
+
+Filters validate requests.
+
+SecurityContext stores current user info.
+
+
+How to write jwt token in spring boot in detailed
+
+JWT Authentication in Spring Boot — Complete Detailed Guide
+Now we’ll learn:
+
+How to implement JWT authentication in Spring Boot step by step
+
+We’ll build a complete flow:
+
+User Login
+   ↓
+Spring Security validates user
+   ↓
+JWT token generated
+   ↓
+Client stores token
+   ↓
+Client sends token in every request
+   ↓
+JWT filter validates token
+   ↓
+Protected APIs accessible
+We’ll cover:
+
+Every class
+
+Every method
+
+Every annotation
+
+Every configuration
+
+Why each thing exists
+
+Real-world meaning in simple language
+
+1. Technologies Used
+Technology	Purpose
+Java	Programming language
+Spring Boot	Backend framework
+Spring Security	Security handling
+JWT	Authentication token
+Maven	Dependency management
+JPA/Hibernate	Database operations
+MySQL	Database
+2. Project Dependencies
+Add dependencies in pom.xml
+
+<dependencies>
+
+    <!-- Spring Boot Web -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- Spring Security -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- JPA -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- MySQL -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+    </dependency>
+
+    <!-- JWT -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+
+</dependencies>
+3. Why These Dependencies?
+spring-boot-starter-web
+Used for:
+
+REST APIs
+
+Controllers
+
+HTTP requests
+
+Without this:
+
+Cannot create APIs.
+
+spring-boot-starter-security
+Provides:
+
+Authentication
+
+Authorization
+
+Password encryption
+
+Security filters
+
+JPA
+Used for:
+
+Database communication.
+
+JWT Dependencies
+Used for:
+
+Creating JWT token
+
+Validating JWT token
+
+Extracting claims
+
+Official library:
+
+JJWT GitHub Repository
+
+4. Project Structure
+src/main/java
+│
+├── config
+│     └── SecurityConfig
+│
+├── controller
+│     └── AuthController
+│
+├── entity
+│     └── User
+│
+├── repository
+│     └── UserRepository
+│
+├── security
+│     ├── JwtUtil
+│     ├── JwtFilter
+│     └── CustomUserDetailsService
+│
+├── dto
+│     ├── AuthRequest
+│     └── AuthResponse
+5. Create User Entity
+@Entity
+@Table(name = "users")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String username;
+
+    private String password;
+
+    private String role;
+
+    // getters and setters
+}
+6. Understanding Every Annotation
+@Entity
+Tells JPA:
+
+“This class represents a database table.”
+
+@Table
+Specifies table name.
+
+@Table(name = "users")
+@Id
+Primary key.
+
+@GeneratedValue
+Automatically generates ID.
+
+7. Repository Layer
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findByUsername(String username);
+}
+8. What is Repository?
+Repository acts like:
+
+“Database communication layer.”
+
+Used for:
+
+Save user
+
+Find user
+
+Delete user
+
+9. DTO Classes
+AuthRequest
+public class AuthRequest {
+
+    private String username;
+    private String password;
+
+    // getters setters
+}
+Purpose:
+
+Accept login request data.
+
+AuthResponse
+public class AuthResponse {
+
+    private String token;
+
+    public AuthResponse(String token) {
+        this.token = token;
+    }
+
+    // getter
+}
+Purpose:
+
+Send JWT token to client.
+
+10. CustomUserDetailsService
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+    @Autowired
+    private UserRepository repository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+
+        User user = repository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found"));
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority(user.getRole()))
+        );
+    }
+}
+11. What is UserDetailsService?
+Spring Security uses this to:
+
+Fetch user from DB
+
+Verify password
+
+Load roles
+
+Think of it as:
+
+“User finder service.”
+
+12. UserDetails
+Spring Security’s internal user object.
+
+Contains:
+
+Username
+
+Password
+
+Authorities (roles)
+
+13. SimpleGrantedAuthority
+Represents role/permission.
+
+Example:
+
+ROLE_ADMIN
+ROLE_USER
+14. JWT Utility Class
+Most important class.
+
+@Component
+public class JwtUtil {
+
+    private final String SECRET_KEY =
+            "mysecretkeymysecretkeymysecretkey";
+
+    public String generateToken(String username) {
+
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + 1000 * 60 * 60)
+                )
+                .signWith(
+                        Keys.hmacShaKeyFor(SECRET_KEY.getBytes()),
+                        SignatureAlgorithm.HS256
+                )
+                .compact();
+    }
+
+    public String extractUsername(String token) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(
+                        Keys.hmacShaKeyFor(SECRET_KEY.getBytes())
+                )
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public boolean validateToken(String token, String username) {
+
+        final String extractedUsername = extractUsername(token);
+
+        return extractedUsername.equals(username);
+    }
+}
+15. Understanding Every JWT Method
+generateToken()
+Creates JWT token.
+
+setSubject()
+Stores username.
+
+.setSubject(username)
+Equivalent claim:
+
+{
+  "sub": "rahul"
+}
+setIssuedAt()
+Stores token creation time.
+
+setExpiration()
+Sets expiry time.
+
+Example:
+
+1 hour validity
+
+signWith()
+Creates digital signature.
+
+Uses:
+
+Secret key
+
+Algorithm
+
+compact()
+Converts token into final JWT string.
+
+16. JWT Filter
+Very important.
+
+@Component
+public class JwtFilter extends OncePerRequestFilter {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private CustomUserDetailsService service;
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String authHeader = request.getHeader("Authorization");
+
+        String token = null;
+        String username = null;
+
+        if(authHeader != null &&
+                authHeader.startsWith("Bearer ")) {
+
+            token = authHeader.substring(7);
+
+            username = jwtUtil.extractUsername(token);
+        }
+
+        if(username != null &&
+                SecurityContextHolder.getContext()
+                        .getAuthentication() == null) {
+
+            UserDetails userDetails =
+                    service.loadUserByUsername(username);
+
+            if(jwtUtil.validateToken(token,
+                    userDetails.getUsername())) {
+
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authToken);
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
+}
+17. What is Filter?
+Filter intercepts request before controller.
+
+Like airport security check.
+
+18. OncePerRequestFilter
+Ensures:
+
+Filter runs once per request.
+
+19. Authorization Header Extraction
+request.getHeader("Authorization");
+Reads:
+
+Authorization: Bearer eyJhb...
+20. substring(7)
+Removes:
+
+Bearer
+Leaving only token.
+
+21. SecurityContextHolder
+Stores authenticated user information.
+
+Like:
+
+“Current logged-in user memory.”
+
+22. UsernamePasswordAuthenticationToken
+Represents authenticated user.
+
+Contains:
+
+User details
+
+Authorities
+
+23. Security Configuration
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailsService();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider();
+
+        provider.setUserDetailsService(userDetailsService());
+
+        provider.setPasswordEncoder(passwordEncoder());
+
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config)
+            throws Exception {
+
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
+
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
+        return http.build();
+    }
+}
+24. Understanding SecurityConfig
+This class controls:
+
+Authentication rules
+
+Authorization rules
+
+JWT filter registration
+
+25. @EnableWebSecurity
+Enables Spring Security.
+
+26. PasswordEncoder
+new BCryptPasswordEncoder()
+Encrypts passwords.
+
+27. BCrypt
+Converts:
+
+password123
+into:
+
+$2a$10$xyz...
+One-way hashing.
+
+28. DaoAuthenticationProvider
+Used to:
+
+Load user from DB
+
+Compare passwords
+
+29. csrf().disable()
+Disables CSRF protection.
+
+Usually done for JWT APIs.
+
+30. requestMatchers("/login").permitAll()
+Allows login endpoint without authentication.
+
+31. anyRequest().authenticated()
+All other APIs require token.
+
+32. SessionCreationPolicy.STATELESS
+Important.
+
+Means:
+
+“Do not create sessions.”
+
+JWT authentication is stateless.
+
+33. addFilterBefore()
+Adds JWT filter before Spring login filter.
+
+34. Auth Controller
+@RestController
+public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/login")
+    public AuthResponse login(
+            @RequestBody AuthRequest request) {
+
+        Authentication authentication =
+                authManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                request.getUsername(),
+                                request.getPassword()
+                        )
+                );
+
+        if(authentication.isAuthenticated()) {
+
+            String token =
+                    jwtUtil.generateToken(request.getUsername());
+
+            return new AuthResponse(token);
+        }
+
+        throw new RuntimeException("Invalid credentials");
+    }
+}
+35. AuthenticationManager
+Responsible for:
+
+Verifying username/password.
+
+36. authenticate()
+Checks:
+
+User exists?
+
+Password correct?
+
+37. Complete JWT Flow
+Step 1
+Client sends:
+
+{
+  "username":"rahul",
+  "password":"1234"
+}
+Step 2
+Spring Security validates credentials.
+
+Step 3
+JWT generated.
+
+Step 4
+Token returned:
+
+{
+  "token":"eyJhbGc..."
+}
+Step 5
+Client stores token.
+
+Step 6
+Client sends:
+
+Authorization: Bearer eyJhbGc...
+Step 7
+JWT filter validates token.
+
+Step 8
+Protected API accessible.
+
+38. Protected API Example
+@GetMapping("/hello")
+public String hello() {
+    return "Hello User";
+}
+Without token:
+
+Access denied.
+
+With valid token:
+
+Success.
+
+39. application.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/jwt_db
+spring.datasource.username=root
+spring.datasource.password=root
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+40. Database Example
+INSERT INTO users(username,password,role)
+VALUES(
+'rahul',
+'$2a$10$abcxyz...',
+'ROLE_USER'
+);
+Password should be BCrypt encoded.
+
+41. How to Generate BCrypt Password
+You can use:
+
+System.out.println(
+    new BCryptPasswordEncoder().encode("1234")
+);
+42. Important Interview Questions
+Question	Answer
+Why JWT?	Stateless authentication
+Why filter?	Validate token on every request
+Why SecurityContext?	Store authenticated user
+Why BCrypt?	Secure password hashing
+Why stateless?	No session storage
+43. Common Mistakes
+Mistake	Problem
+Weak secret key	Security risk
+Long expiry	Dangerous
+Plain passwords	Huge risk
+No HTTPS	Token theft
+44. Best Practices
+✅ Use HTTPS
+✅ Short expiry token
+✅ Use refresh token
+✅ Store secret in env variable
+✅ Use BCrypt
+✅ Validate expiration
+
+45. Final Understanding
+JWT authentication in Spring Boot works like this:
+
+Login
+↓
+Generate Token
+↓
+Send Token
+↓
+Validate Token
+↓
+Allow Access
+Main classes:
+
+Class	Purpose
+JwtUtil	Create/validate token
+JwtFilter	Check token
+SecurityConfig	Security rules
+UserDetailsService	Load users
+AuthController	Login endpoint
+This is the core foundation used in:
+
+Banking apps
+
+E-commerce apps
+
+Microservices
+
+Mobile backends
+
+Enterprise systems
+
+
+
+Voice
+We use cookies
+
+Cookies help this site function, measure usage, and support marketing. Manage your cookie preferences anytime. Learn more about our cookie policy.
+
+
+Reject non-essential
+
+Accept all

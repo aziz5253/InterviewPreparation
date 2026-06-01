@@ -1,0 +1,14 @@
+
+<web-app>
+
+    <servlet>
+        <servlet-name>UserController</servlet-name>
+        <servlet-class>com.controller.UserController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UserController</servlet-name>
+        <url-pattern>/users</url-pattern>
+    </servlet-mapping>
+
+</web-app>

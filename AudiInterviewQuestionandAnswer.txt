@@ -1,0 +1,262 @@
+Audi L1
+
+-------------
+ 
+The goal of this exercise is to use java streams on the given list. The list with fruits is provided and there are few things to do:
+ 
+1. Remove duplicates from this list
+ 
+2. Filter only names starting with letter "A" or "a"
+ 
+3. Sort the list alphabetically
+ 
+It has to be done with one combined java stream.
+ 
+	package org.example;
+ 
+	import java.util.Arrays;
+ 
+	import java.util.List;
+ 
+	public class Main {
+ 
+		public static void main(String[] args) {
+ 
+			List<String> fruits = Arrays.asList("apple", "banana", "pear", "avocado", "plum");
+ 
+			System.out.println("Fruits: " + fruits);
+ 
+		}
+ 
+	}
+ 
+---------
+
+What will be the output::
+
+class Parent {
+
+    int value;
+ 
+    Parent() {
+
+        System.out.println("Parent default constructor");
+
+    }
+ 
+    Parent(int value) {
+
+        this.value = value;
+
+        System.out.println("Parent parameterized constructor: " + value);  
+
+    }
+ 
+    void show() {
+
+        System.out.println("Parent show: " + value);
+
+    }
+
+}
+ 
+class Child extends Parent {
+
+    Child() {
+
+        System.out.println("Child default constructor");
+
+    }
+ 
+    Child(int value) {
+
+        super(value * 2);
+
+        System.out.println("Child parameterized constructor: " + value);     }
+ 
+    @Override
+
+    void show() {
+
+        System.out.println("Child show: " + value);    }
+
+}
+ 
+public class Test {
+
+    public static void main(String[] args) {
+
+        Parent obj = new Child(10);
+
+        obj.show(); 
+
+    }
+
+}
+
+--------------------
+ 
+/*Objective
+
+Write a method that takes a list of strings and groups them by anagrams. 
+
+Anagrams are words that contain the same characters in different orders.
+
+Requirements
+
+Create a method:
+
+public static Map<String, List<String>> groupAnagrams(List<String> words)
+
+The method should:
+
+- Group words that are anagrams of each other
+
+- Return a Map where the key is a sorted version of characters, and the value is a list of anagrams
+
+- Handle empty strings and null inputs gracefully
+
+- Be case-insensitive (treat "Listen" and "Silent" as anagrams)
+
+Key Points to Consider:
+
+- Efficient grouping algorithm
+
+- String manipulation
+
+- Use of appropriate data structures (Map, List)
+
+- Clean, readable code
+
+Examples:
+
+Input: ["eat", "tea", "tan", "ate", "nat", "bat"]
+
+Output: {
+
+  "aet" -> ["eat", "tea", "ate"],
+
+  "ant" -> ["tan", "nat"],
+
+  "abt" -> ["bat"]
+
+}
+
+Input: ["listen", "silent", "enlist"]
+
+Output: {
+
+  "eilnst" -> ["listen", "silent", "enlist"]
+
+}
+ 
+ */
+
+----------------------------
+
+/*I/P:
+
+String items= "non-veg,chicken # fruit,apple # veg,carrot # fruit,mango # veg,potato # non-veg,fish";
+
+O/P:
+ 
+"fruit" -> ["apple", "mango"]
+
+"veg" -> ["carrot,potato"]
+
+"non-veg" -> [chicken,fish]*/
+
+ 
+Generlli Account L1
+
+Write a functional interface to check whether a number is prime or not.
+
+What is the difference between an interface and a functional interface?
+
+Write a REST API to update a user.
+
+Can we use @PostMapping to update a record?
+
+If yes, what is the purpose of @PutMapping?
+
+What is the difference between them?
+
+How do you inject dependencies in Spring?
+
+How do you secure a REST API?
+
+Where are user credentials validated in an application?
+
+Explain polymorphism. Where have you used it in your project?
+
+Write an SQL query to find duplicate names from the student table.
+
+Given the input string "S3C2TP4", OP :-SSSCCTPPPP? Expand string
+
+An employee can have many projects.
+
+How do you get a list of distinct projects?
+
+What is the use of try-with-resources?
+
+How do you handle exception handling in lambda expressions?
+
+How does ArrayList grow internally?
+
+What is the difference between Hashtable and HashSet?
+
+Write a comparator for the Employee class.
+
+How does HashSet maintain uniqueness internally?
+
+When should you use <?> and when should you use <T> in generics?
+
+How does encapsulation secure our data?
+
+how encapsulation secure our data
+SQL:-find duplicate students name from student table . 
+what will be the op
+ 
+ 
+ 
+import java.io.*;
+ 
+public class Main {
+ 
+public static void main (String[] args) {
+ 
+Main m = new Child();
+ 
+m.doSomething();
+
+}
+ 
+ 
+
+void doSomething() throws FileNotFoundException {
+ 
+ 
+
+System.out.println(""inside doSomething "");
+ 
+throw new FileNotFoundException();
+
+}
+ 
+}
+ 
+ class Child extends Main {
+ 
+void doSomething() throws IOException {
+
+System.out.println(""inside doSomething child"");
+
+}
+
+}  
+ 
+ 
+ 
+ 
+ 
+ 

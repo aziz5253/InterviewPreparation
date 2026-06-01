@@ -1,0 +1,499 @@
+OWASP Top 10 (2021) — Senior Java Perspective
+1. Broken Access Control
+What it means
+
+Users can access resources or actions they should not.
+
+Common Java/Spring Issues
+Missing authorization annotations
+Insecure REST endpoints
+IDOR (Insecure Direct Object References)
+Role bypasses
+Admin endpoints exposed
+Vulnerable Example
+@GetMapping("/user/{id}")
+public User getUser(@PathVariable Long id) {
+    return userRepository.findById(id).get();
+}
+
+Problem:
+Any authenticated user can access any user's data.
+
+@GetMapping("/user/{id}")
+public User getUser(@PathVariable Long id,
+                    Authentication auth) {
+
+    User user = userRepository.findById(id).orElseThrow();
+
+    if (!user.getEmail().equals(auth.getName())) {
+        throw new AccessDeniedException("Forbidden");
+    }
+
+    return user;
+}
+
+
+@PreAuthorize("hasRole('ADMIN')")
+@GetMapping("/admin")
+public String adminEndpoint() { return "admin"; }
+Use RBAC / ABAC
+Validate authorization on backend only
+Avoid relying on frontend checks
+Use Spring Security method-level security
+
+2. Cryptographic Failures
+
+(Previously "Sensitive Data Exposure")
+
+String password = "plainText";
+
+BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+String hash = encoder.encode(password);	
+
+Risks
+Weak encryption
+Hardcoded secrets
+Plaintext passwords
+Weak TLS config
+Password Storage
+WRONG
+String password = "plainText";
+CORRECT
+BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+String hash = encoder.encode(password);
+Senior-Level Practices
+Use BCrypt/Argon2
+Use HTTPS everywhere
+Rotate secrets
+Store secrets in Vault/KMS
+Disable weak ciphers
+Encrypt PII data at rest
+
+3. Injection
+
+One of the most critical categories for Java developers.
+
+SQL Injection
+Vulnerable Code
+String sql = "SELECT * FROM users WHERE name = '" + name + "'";
+
+Attack:
+
+' OR '1'='1
+Secure Code
+PreparedStatement stmt =
+ connection.prepareStatement(
+   "SELECT * FROM users WHERE name = ?"
+ );
+
+stmt.setString(1, name);
+ORM Doesn't Fully Save You
+
+Even with JPA/Hibernate:
+
+Vulnerable
+String q = "from User where name='" + name + "'";
+Secure
+Query q = entityManager.createQuery(
+    "from User where name=:name"
+);
+
+q.setParameter("name", name);
+Other Injection Types
+NoSQL Injection
+LDAP Injection
+OS Command Injection
+XPath Injection
+Command Injection Example
+BAD
+Runtime.getRuntime().exec("ping " + host);
+GOOD
+ProcessBuilder pb = new ProcessBuilder("ping", host);
+4. Insecure Design
+
+This is architecture-level security.
+
+Examples
+No rate limiting
+Weak password reset flows
+Missing fraud detection
+Poor trust boundaries
+Senior Responsibilities
+Threat modeling
+Security architecture reviews
+Abuse-case analysis
+Zero trust principles
+Secure defaults
+Threat Modeling Concepts
+STRIDE
+
+STRIDE
+
+Spoofing
+Tampering
+Repudiation
+Information Disclosure
+Denial of Service
+Elevation of Privilege
+5. Security Misconfiguration
+
+Very common in enterprise Java systems.
+
+Examples
+Default passwords
+Open S3 buckets
+Debug enabled in production
+Stack traces exposed
+Unnecessary ports/services
+Spring Boot Risks
+BAD
+management.endpoints.web.exposure.include=*
+GOOD
+management.endpoints.web.exposure.include=health,info
+Senior Best Practices
+Harden Docker images
+Secure Kubernetes configs
+Disable directory listing
+Use security headers
+Automate config scanning
+6. Vulnerable and Outdated Components
+
+Huge problem in Java ecosystems.
+
+Risks
+Old Spring versions
+Log4Shell
+Vulnerable Jackson libraries
+Famous Example
+
+Log4Shell
+
+Remote code execution vulnerability in Log4j.
+
+Senior Practices
+Use SCA tools
+Monitor CVEs
+Patch continuously
+Dependency governance
+Tools
+OWASP Dependency Check
+Snyk
+Dependabot
+
+Official project:
+OWASP Dependency Check
+
+7. Identification and Authentication Failures
+Risks
+Weak JWT validation
+Session fixation
+Broken MFA
+Poor password policies
+JWT Validation Mistake
+BAD
+JWT.decode(token);
+GOOD
+JWTVerifier verifier = JWT.require(algorithm)
+    .withIssuer("auth-service")
+    .build();
+Senior-Level Guidance
+Use OAuth2/OpenID Connect
+Prefer short-lived tokens
+Rotate refresh tokens
+Implement MFA
+Protect against brute force
+8. Software and Data Integrity Failures
+Examples
+Unsafe deserialization
+Untrusted CI/CD pipelines
+Supply chain attacks
+Java Deserialization Vulnerability
+Dangerous
+ObjectInputStream in =
+   new ObjectInputStream(inputStream);
+
+Object obj = in.readObject();
+Safer Alternatives
+JSON/XML binding with validation
+Allowlist classes
+Avoid native Java serialization
+CI/CD Security
+Signed artifacts
+SBOM generation
+Immutable deployments
+9. Security Logging and Monitoring Failures
+Problems
+Missing audit trails
+No intrusion detection
+Sensitive data in logs
+Secure Logging
+BAD
+log.info("Password: {}", password);
+GOOD
+log.info("Login attempt for user {}", username);
+Senior Practices
+Structured logging
+Centralized monitoring
+SIEM integration
+Alerting pipelines
+10. Server-Side Request Forgery (SSRF)
+Vulnerable Example
+URL url = new URL(userInput);
+
+Attacker may access:
+
+Internal services
+Cloud metadata endpoints
+Redis/Kubernetes APIs
+Prevention
+Allowlist domains
+Disable internal IP access
+Validate URLs strictly
+Use outbound proxies
+OWASP ASVS (Very Important for Senior Developers)
+What is ASVS?
+
+OWASP ASVS
+
+A detailed security requirements framework.
+
+Official:
+OWASP ASVS
+
+ASVS Levels
+Level	Meaning
+L1	Basic security
+L2	Standard enterprise apps
+L3	Critical/high-sensitive systems
+
+Senior developers often align enterprise APIs with ASVS L2.
+
+OWASP Proactive Controls
+
+OWASP Proactive Controls
+
+Official:
+OWASP Proactive Controls
+
+Important controls:
+
+Parameterized queries
+Input validation
+Output encoding
+Access control
+Secure logging
+Data protection
+Important Security Areas for Senior Java Developers
+1. Spring Security Mastery
+
+You should know:
+
+Authentication flows
+OAuth2 Resource Server
+JWT validation
+CSRF
+CORS
+Session management
+Method-level security
+
+Official:
+Spring Security
+
+2. Secure REST APIs
+Checklist
+Rate limiting
+Input validation
+OpenAPI validation
+Idempotency
+Secure headers
+Proper status codes
+3. Input Validation
+Use Bean Validation
+public class UserDTO {
+
+   @NotBlank
+   private String name;
+
+   @Email
+   private String email;
+}
+4. Output Encoding
+
+Critical for preventing XSS.
+
+Example
+HtmlUtils.htmlEscape(input);
+5. Secrets Management
+
+Avoid:
+
+db.password=admin123
+
+Use:
+
+HashiCorp Vault
+AWS Secrets Manager
+Kubernetes Secrets
+6. Container Security
+Secure Dockerfile
+BAD
+FROM ubuntu
+BETTER
+FROM eclipse-temurin:21-jre-alpine
+Best Practices
+Non-root users
+Minimal images
+Read-only FS
+Image scanning
+7. Kubernetes Security
+
+Important concepts:
+
+Network Policies
+RBAC
+Pod Security
+Secrets encryption
+Admission controllers
+8. DevSecOps
+
+Senior developers increasingly own security automation.
+
+Pipeline Security
+SAST
+DAST
+SCA
+IaC scanning
+Container scanning
+Common Tools
+Area	Tools
+SAST	SonarQube, Checkmarx
+SCA	Snyk, OWASP Dependency Check
+DAST	OWASP ZAP
+Containers	Trivy
+Secrets	GitLeaks
+OWASP ZAP
+
+OWASP ZAP
+
+Popular free security testing tool.
+
+Official:
+OWASP ZAP
+
+Used for:
+
+API scanning
+XSS detection
+Security regression testing
+Secure Coding Principles
+Principle of Least Privilege
+
+Users/services only get minimum permissions.
+
+Defense in Depth
+
+Multiple security layers.
+
+Fail Securely
+
+Default deny.
+
+Never Trust User Input
+
+Validate all external data.
+
+Security Headers Senior Developers Should Know
+Important Headers
+Content-Security-Policy
+X-Frame-Options
+Strict-Transport-Security
+X-Content-Type-Options
+OWASP Cheat Sheets (Extremely Valuable)
+
+OWASP Cheat Sheet Series
+
+Official:
+OWASP Cheat Sheet Series
+
+Especially important:
+
+SQL Injection Prevention
+JWT Cheat Sheet
+Password Storage
+REST Security
+Logging
+Docker Security
+Real Enterprise Security Expectations for Senior Java Developers
+
+A senior developer is often expected to:
+
+Architecture
+Design secure microservices
+Define auth strategies
+Review threat models
+Coding
+Enforce secure coding standards
+Review pull requests for vulnerabilities
+Operations
+Support incident response
+Analyze CVEs
+Coordinate patching
+Leadership
+Mentor developers on security
+Drive DevSecOps adoption
+Work with AppSec teams
+Common Java Security Interview Topics
+
+You should be able to explain:
+
+CSRF vs XSS
+JWT vs Sessions
+OAuth2 flows
+CORS
+SQL injection prevention
+BCrypt vs Argon2
+Rate limiting
+Secure API design
+Log4Shell
+Spring Security filters
+Zero trust architecture
+Recommended Learning Path
+Beginner to Advanced
+OWASP Top 10
+Spring Security
+Secure REST APIs
+OAuth2/OpenID Connect
+JWT Security
+Docker/Kubernetes Security
+Threat Modeling
+DevSecOps
+Cloud Security
+Secure Architecture Reviews
+Best Resources
+Official OWASP
+
+OWASP Top 10
+
+API Security
+
+OWASP API Security Project
+
+OWASP API Security Top 10
+
+Java Security
+
+Oracle Java Security Documentation
+
+Senior Developer Security Mindset
+
+A senior Java developer should think:
+
+"How can this fail securely?"
+"What if this input is malicious?"
+"What happens if authentication breaks?"
+"Can this service be abused?"
+"How do we detect attacks?"
+"How do we reduce blast radius?"
+
+That mindset is what separates secure enterprise developers from developers who only implement features.
+

@@ -1,0 +1,493 @@
+
+Get responses tailored to you
+
+Log in to get answers based on saved chats, plus create images and upload files.
+
+
+Log in
+Explain Oauth in Spring Security with Bearer Token explain resource server and authorization server in detailed
+
+OAuth 2.0 in Spring Security is commonly used to secure APIs using Bearer Tokens (usually JWTs). To understand it properly, you need to clearly separate these concepts:
+
+Client
+
+User / Resource Owner
+
+Authorization Server
+
+Resource Server
+
+Access Token (Bearer Token)
+
+1. What is OAuth 2.0?
+OAuth 2.0 is an authorization framework.
+
+It allows an application to access protected resources without sharing the user's password.
+
+Example:
+
+You log into a website using Google
+
+Google gives that website a token
+
+The website uses that token to access your profile
+
+Instead of username/password everywhere, we use:
+
+Access Tokens
+
+Usually sent as:
+
+Authorization: Bearer eyJhbGciOi...
+2. What is a Bearer Token?
+A Bearer Token means:
+
+Whoever “bears” (holds) the token can access the resource.
+
+The server does not ask for username/password again.
+
+Example request:
+
+GET /api/orders
+Authorization: Bearer eyJhbGciOiJIUzI1Ni...
+The API validates the token and allows access.
+
+3. Real Architecture
++--------+                                +-------------------+
+| User   |                                | Authorization     |
+|        |---- Login ------------------->| Server            |
+|        |                                | (Issues Tokens)   |
++--------+                                +-------------------+
+      |                                            |
+      |                                            |
+      |<------ Access Token ------------------------|
+      |
+      |
+      v
++-------------+     Bearer Token     +----------------+
+| Client App  | -------------------> | Resource       |
+| (Frontend)  |                      | Server (API)   |
++-------------+                      +----------------+
+4. Authorization Server
+The Authorization Server is responsible for:
+
+Authenticating users
+
+Issuing tokens
+
+Validating clients
+
+Managing scopes/permissions
+
+Examples:
+
+Okta
+
+Auth0
+
+Keycloak
+
+Google OAuth server
+
+Spring Authorization Server
+
+Responsibilities of Authorization Server
+A. User Login
+User enters:
+
+username/password
+B. Verify Credentials
+Checks database/LDAP/etc.
+
+C. Generate Access Token
+Usually JWT:
+
+{
+  "sub": "john",
+  "roles": ["ADMIN"],
+  "scope": "read write",
+  "exp": 1710000000
+}
+D. Return Token
+{
+  "access_token": "eyJhbGc...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+5. Resource Server
+The Resource Server hosts protected APIs/resources.
+
+Example:
+
+/api/orders
+/api/users
+/api/payments
+The Resource Server:
+
+receives Bearer Token
+
+validates token
+
+extracts claims/roles
+
+authorizes access
+
+Resource Server Does NOT:
+ask username/password
+
+generate tokens
+
+manage login screens
+
+It ONLY validates tokens.
+
+6. Difference Between Authorization Server and Resource Server
+Feature	Authorization Server	Resource Server
+Authenticates users	YES	NO
+Issues tokens	YES	NO
+Validates tokens	YES	YES
+Hosts APIs	Usually NO	YES
+Handles login	YES	NO
+Returns protected data	NO	YES
+7. JWT Token Structure
+Most Spring apps use JWT.
+
+JWT has 3 parts:
+
+header.payload.signature
+Example:
+
+eyJhbGciOiJIUzI1Ni...
+JWT Payload Example
+{
+  "sub": "john",
+  "roles": ["USER"],
+  "scope": "read",
+  "exp": 1712121212
+}
+8. OAuth Flow in Spring Security
+Typical flow:
+
+1. User logs in
+2. Authorization Server generates JWT
+3. Client stores JWT
+4. Client sends JWT in Authorization header
+5. Resource Server validates JWT
+6. API returns protected data
+9. Spring Security as Resource Server
+Dependency:
+
+Maven:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+application.yml
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9000
+This means:
+
+Spring will validate JWTs
+
+It trusts tokens from this issuer
+
+10. Resource Server Security Configuration
+Spring Security 6+:
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/public").permitAll()
+                .anyRequest().authenticated()
+            )
+            .oauth2ResourceServer(oauth ->
+                oauth.jwt(Customizer.withDefaults())
+            );
+
+        return http.build();
+    }
+}
+What Happens Internally?
+When request arrives:
+
+Authorization: Bearer TOKEN
+Spring:
+
+Extracts token
+
+Validates signature
+
+Checks expiration
+
+Converts claims into Authentication object
+
+Adds user to SecurityContext
+
+11. Accessing JWT Claims
+Controller:
+
+@GetMapping("/profile")
+public Map<String, Object> profile(@AuthenticationPrincipal Jwt jwt) {
+    return jwt.getClaims();
+}
+12. Role-Based Authorization
+JWT:
+
+{
+  "roles": ["ADMIN"]
+}
+Spring config:
+
+.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/admin/**").hasRole("ADMIN")
+    .anyRequest().authenticated()
+)
+13. Spring Authorization Server
+Spring also provides:
+
+Spring Authorization Server
+
+Official project:
+
+Spring Authorization Server Documentation
+
+It helps build your own OAuth2 Authorization Server.
+
+14. Authorization Server Example
+Dependency:
+
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-oauth2-authorization-server</artifactId>
+</dependency>
+Minimal Configuration
+@Configuration
+public class AuthorizationServerConfig {
+
+    @Bean
+    public RegisteredClientRepository registeredClientRepository() {
+
+        RegisteredClient client =
+            RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("client")
+                .clientSecret("{noop}secret")
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .scope("read")
+                .build();
+
+        return new InMemoryRegisteredClientRepository(client);
+    }
+}
+15. OAuth2 Grant Types
+OAuth defines multiple flows.
+
+A. Authorization Code Flow (Most Common)
+Used in:
+
+Web apps
+
+Mobile apps
+
+Login with Google
+
+Flow:
+
+User -> Login Page -> Authorization Server
+                <- Authorization Code
+Client -> Exchange Code for Token
+Most secure.
+
+B. Client Credentials Flow
+Machine-to-machine communication.
+
+No user login.
+
+Example:
+
+Microservice A -> Microservice B
+C. Refresh Token Flow
+Used to generate new access tokens without re-login.
+
+16. Authentication vs Authorization
+Authentication	Authorization
+Who are you?	What can you access?
+Login	Permissions
+Username/password	Roles/scopes
+OAuth mainly handles:
+
+Authorization
+Authentication is usually handled using:
+
+OpenID Connect (OIDC)
+
+JWT
+
+Session login
+
+17. OAuth2 + OpenID Connect (OIDC)
+OIDC extends OAuth2 for authentication.
+
+Adds:
+
+ID Token
+
+User profile
+
+Login identity
+
+Google Login uses OIDC.
+
+18. How Spring Validates JWT
+Spring Resource Server performs:
+
+Signature Validation
+Checks token integrity.
+
+Expiration Validation
+"exp": 1710000000
+Issuer Validation
+issuer-uri:
+Audience Validation (optional)
+Ensures token intended for this API.
+
+19. JWT vs Opaque Token
+JWT
+Self-contained token.
+
+header.payload.signature
+Pros:
+
+Fast
+
+No DB call
+
+Stateless
+
+Cons:
+
+Hard to revoke immediately
+
+Opaque Token
+Random string:
+
+a8sd7as98d7...
+Resource server calls auth server to validate.
+
+Pros:
+
+Easy revocation
+
+Cons:
+
+Extra network call
+
+20. OAuth2 in Microservices
+Common architecture:
+
+Frontend
+   |
+   v
+API Gateway
+   |
+   +---- User Service
+   +---- Order Service
+   +---- Payment Service
+All services:
+
+act as Resource Servers
+
+validate JWT
+
+Central Auth Server issues tokens.
+
+21. Common Spring Security Filters
+Important filters internally:
+
+Filter	Purpose
+BearerTokenAuthenticationFilter	Extract Bearer token
+JwtAuthenticationProvider	Validate JWT
+SecurityContextHolder	Store authenticated user
+22. Example Full Request
+Step 1 — Get Token
+POST /oauth2/token
+Response:
+
+{
+  "access_token": "abc.xyz.123"
+}
+Step 2 — Call API
+GET /api/orders
+Authorization: Bearer abc.xyz.123
+Step 3 — Resource Server Validates
+If valid:
+
+[
+  {
+    "id": 1,
+    "item": "Laptop"
+  }
+]
+23. Typical Production Setup
+Component	Technology
+Authorization Server	Keycloak/Auth0/Okta
+API Gateway	Spring Cloud Gateway
+Resource Server	Spring Boot APIs
+Token Type	JWT
+Frontend	React/Angular
+24. Key Concepts Summary
+Concept	Meaning
+OAuth2	Authorization framework
+Bearer Token	Token used to access APIs
+JWT	Self-contained token
+Authorization Server	Issues tokens
+Resource Server	Protects APIs
+Scope	Permission
+Client	Application using token
+25. Most Important Understanding
+The biggest confusion is this:
+
+Authorization Server
+Creates token
+Resource Server
+Consumes/validates token
+Think of it like:
+
+Authorization Server = Passport Office
+Resource Server = Airport Security
+Passport office issues passport
+
+Airport validates passport
+
+The airport does not create passports.
+
+26. Official Documentation
+Spring Security OAuth2 Resource Server Docs
+
+OAuth 2.0 RFC Specification
+
+JWT Introduction
+
+Spring Security Reference
+
+
+
+Voice
+We use cookies
+
+Cookies help this site function, measure usage, and support marketing. Manage your cookie preferences anytime. Learn more about our cookie policy.
+
+
+Reject non-essential
+
+Accept all

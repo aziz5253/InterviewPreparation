@@ -1,0 +1,48 @@
+1. Easy Level Spring JPA Interview Questions
+#	Question
+1	What is Spring JPA?
+2	What is the difference between JPA and Hibernate?
+3	What is @Entity annotation in Spring JPA?
+4	What is @Id annotation in Spring JPA?
+5	What is the purpose of @GeneratedValue in Spring JPA?
+6	What is the role of @Column annotation in Spring JPA?
+7	What is the EntityManager in Spring JPA?
+8	How do you create a repository in Spring Data JPA?
+9	What is @Table annotation used for in Spring JPA?
+10	How do you retrieve an entity using its primary key in Spring JPA?
+2. Medium Level Spring JPA Interview Questions
+#	Question
+11	What are the different types of relationships in Spring JPA?
+12	What is @ManyToOne and @OneToMany in Spring JPA?
+13	What is @OneToOne and @ManyToMany in Spring JPA?
+14	What is @JoinColumn in Spring JPA?
+15	What is @Query annotation in Spring Data JPA?
+16	What is JPQL (Java Persistence Query Language)?
+17	How do you implement pagination in Spring JPA?
+18	How do you implement sorting in Spring JPA?
+19	What are the differences between findAll() and findAll(Sort sort) in Spring JPA?
+20	What is the difference between save() and saveAll() methods in Spring JPA?
+3. Hard Level Spring JPA Interview Questions
+#	Question
+21	What is the difference between @Transactional and @EnableTransactionManagement in Spring JPA?
+22	What is the @EntityGraph annotation, and when would you use it?
+23	What is the role of the flush() method in Spring JPA?
+24	What is the difference between @PersistenceContext and @Autowired for injecting the EntityManager?
+25	What are Cascading Operations in Spring JPA?
+26	What is the @Modifying annotation used for in Spring Data JPA?
+27	What are the different fetch strategies in Spring JPA?
+28	What is the difference between EntityManager.persist() and EntityManager.merge()?
+29	How do you handle batch processing in Spring Data JPA?
+30	What is the difference between native queries and JPQL queries in Spring JPA?
+4. Advanced Level Spring JPA Interview Questions
+#	Question
+31	How do you handle complex queries and joins in Spring Data JPA?
+32	How does Spring Data JPA implement the Repository pattern?
+33	How do you optimize performance in Spring JPA?
+34	What are the best practices for handling large datasets in Spring JPA?
+35	What is the role of the @Lock annotation in Spring JPA?
+36	How do you implement soft deletes in Spring JPA?
+37	What is Spring Data JPA Specification and how is it used?
+38	How would you integrate Spring JPA with a NoSQL database?
+39	How does Spring JPA support multi-tenancy?
+40	How do you handle the N+1 Query Problem in Spring JPA?

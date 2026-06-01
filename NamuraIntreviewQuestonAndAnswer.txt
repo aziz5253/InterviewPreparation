@@ -1,0 +1,121 @@
+EXCEPTION CHECKED unchecked	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+JAVA 8 map feature-  EXVEPTION why we using	 	 	 	 	 	 	 	 	 	1)//table employee empid,empname,managerid,department	 	 	 	 	 	 	 
+default static method functional interface	 	 	 	 	 	 	 	 	 	//op--> empname,managername	 	 	 	 	 	 	 
+core java	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+try with resources	 	 	 	 	 	 	 	 	 	2)There is a tray (shared resource) that can hold 10 coffee mugs.	 	 	 	 	 	 	 
+MICROSERVICES	 	 	 	 	 	 	 	 	 	Producer → restaurant staff who puts coffee mugs on the tray.	 	 	 	 	 	 	 
+if u have old legacy application , without any xml to json	 	 	 	 	 	 	 	 	 	Consumer → user/customer who takes coffee mugs from the tray.	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	If tray is FULL → producer must WAIT (cannot add more coffee).	 	 	 	 	 	 	 
+3 washroom and 20 persons. -> Synchronously type ..	 	 	 	 	 	 	 	 	 	If tray is EMPTY → consumer must WAIT (no coffee available).	 	 	 	 	 	 	 
+Manually Generic comparator - Array's 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Account object - has id, name, account no -> sort the object	 	 	 	 	 	 	 	 	 	3)Student student1=new Student(1,"rohit");	 	 	 	 	 	 	 
+streams	 	 	 	 	 	 	 	 	 	Student student2=new Student(2,"rahul");	 	 	 	 	 	 	 
+Spring framework how to handle thread concept	 	 	 	 	 	 	 	 	 	Student student3=new Student(3,"prabhash");	 	 	 	 	 	 	 
+Java spring boot microservices react	 	 	 	 	 	 	 	 	 	Student student4=new Student(4,"rohit");	 	 	 	 	 	 	 
+Monisha Rao -> Shailesh pande as hiring manager	 	 	 	 	 	 	 	 	 	what will be hashset size if remove hashcode and equals method and add equals on id or name	 	 	 	 	 	 	 
+HLD EVCharging application	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+microservices REST API	 	 	 	 	 	 	 	 	 	4)in How many way we can process file and when to use which	 	 	 	 	 	 	--FileReader
+xcalidrop, - dropping	 	 	 	 	 	 	 	 	 	5)code on ExecutorService write sample code and return something and ExecutorService  advantage	 	 	 	 	 	 	 
+req	 	 	 	 	 	 	 	 	 	6)multithreading question how to achieve	 	 	 	 	 	 	 
+Database -> MongoDB if nonrelational db	 	 	 	 	 	 	 	 	 	7 diff http status code	 	 	 	 	 	 	 
+Scalability availability	 	 	 	 	 	 	 	 	 	8)If your system allows only 10 requests per minute, but the client sends 15 requests what will be status code	 	 	 	 	 	 	 
+Booking chart- > Booking ID , slot id	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+---	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+-----	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Java micro services	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+solace message broker listening	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+akash padhiyar	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+1. Difference between Abstraction and encapsulation	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+2. Internal behavior of HashMap	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+3. tricky qtns on Employee class and using Employee as a key in Hashmap	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+4. How to restric key modification of hashmap-> by making Employee class immutable	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+5. How to make Employee class immutable	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+6. Override equals and hashcode method and few tricky qtns of problem solving with code snippet	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+7. CompletableFuture	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+8. How Spring Security works	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+9. JWT	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+10. Conditional beans qtn with code snippet -> where I had to identify that conditional bean shoud be used	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+10. @Transactional annotation	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+11. If I have 2 entities Employee and Address, how to make sure that while saving new Employee in database, if there is exception during saving address then also Employee should be saved with null address	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+12. My role in previous project	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+13. SQL queries with group by and having	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Round 2	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+1. Previous clients and my role in projects	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+2. Implement binary search tree	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+3. Riddle -> in a blank room 2 ropes are there, each takes 1 hour to burn, calculate exactly 45 mins	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+4. My views on Ai	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+5. Few managerial qtns	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+---------------------------	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+They are using IntelliJ -> Their own Cloud environment available,	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+They are using Github copilot trained for their organization	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+--------------------------------------------------------	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+MVC architectire	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+entity framework	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+OOPs concept	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+where to use Interface and abstration	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+SQL DML operations	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+CICD pipeline github docker imaging , kubernatives	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+CLI commands windows	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+entity framework approach	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+data first approach core first approach	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Jenkins	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Unit testing	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+repository pattern	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+design pattern	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+how to create containers and docker images	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+how you will deploy  project	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+sonarquobe for codereview	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Unittesting	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+----------------------	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Sending same message to all microservices	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Fanout exchange	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+---------------------------------------------------	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Shailesh pande	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Version java, spring boot	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Java 8 features	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+functional interface can we have other concreate functional	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Comparator reverseorder -> sorting and find program	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+failsafe and failfast difference	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+are we using linklist also in java 8 for hashmap-	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+how to delete an array	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+spring boot latency how to reduce how to improve API response faster -indexing , cashing, load balancer, cookies header.	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+what all annotations used in spring boot application and breif explanation.	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+static polymorphism , dynamic polymorphism	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+spring boot bean life cycle	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+1. mag question:	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  There is a tray (shared resource) that can hold 10 coffee mugs.	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  Producer → restaurant staff who puts coffee mugs on the tray.	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  Consumer → user/customer who takes coffee mugs from the tray.	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  If tray is FULL → producer must WAIT (cannot add more coffee).	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  If tray is EMPTY → consumer must WAIT (no coffee available).	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+2. dependant question:	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  bean A, bean B, bean c, bean d	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  c dependant on A and	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+  d dependant on B how to configure	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+3. design pattern	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+4. max salary on each department	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+5. how to load data in memory while running: static block/ @Post	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+6. 2 table empl and dept N+1 selection problem	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+7. how handle exception in executor  :	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+8. how the services communicate each other:	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+9. get all empl highest salary base on department	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+10. how to fixed memory leak	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+11. what is Kafka and how it work	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+12. multithreading work	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+Nomura Round 2 questions	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+1. Tell about your recent  project	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+2. How you will contribute in nomura	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+3. Find employee with max salary without using order by and limit	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+4. Binary search tree algorithm and implementation	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+5. Puzzle - 1 box with apple box 2 with orange and box 3 having both apple and oranges all box are wrongly labelled.	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 
+6. Puzzle - two stick take 2 hours to burn each.how you will get out of dark room in 30 mins and in 45 mins.

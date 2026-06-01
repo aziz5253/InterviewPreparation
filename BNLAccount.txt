@@ -1,0 +1,1076 @@
+1. ✅ HashSet – What & Internal Working
+What is HashSet?
+HashSet is a collection that:
+
+Stores unique elements
+Does not maintain order
+Backed internally by a HashMap
+
+JavaHashSet<String> set = new HashSet<>();set.add("A");set.add("B");set.add("A"); // duplicate ignoredShow more lines
+
+Internal Working
+Internally:
+Java
+private transient HashMap<E,Object> map;
+private static final Object PRESENT = new Object();
+
+//when you do set.add("A");
+map.put("A",PRESENT);
+
+1)Compute hashcode of an elements
+2)Convert hash to bucket index
+3)Traverse bucket (LinkedList or Tree)
+4)If duplicate → ignore
+5)Else → insert
+When you do:
+Important points (Sr. level)
+
+Collision handling:
+
+Java 7 → LinkedList
+Java 8 → Tree (if bucket size > 8)
+
+
+Time Complexity:
+
+Average: O(1)
+Worst: O(log n) (due to tree)
+
+Hashmap Internal Working
+
+static class Node<K,V> {
+    final int hash;
+    final K key;
+    V value;
+    Node<K,V> next;
+}
+Bucket->Linked list->Converted to red black tree if size>8
+
+
+HashMap<String, Integer> map = new HashMap<>();
+map.put("Amit", 1);
+
+Step 1 Compute Hash
+int hash=hash(key);
+
+h=key.hashcode();
+hash=h
+
+Prevents poor hashCode implementations
+Distributes across buckets
+
+Step2 Calculate index
+index=(n-1)&hash;
+ n= capacity;
+ 
+ default capacity =16
+ loadFactor =0.75%
+ For example when te hashmap is 75% full then it will increase capactiy
+ Threshold=0.75*16 so the threshold is 12
+ when 13 entry is added capacity will be double to 32
+ 
+ When the number of entries exceeds the threshold, the HashMap undergoes rehashing. This process involves recalculating the hash codes of the existing entries and redistributing them across the new, larger number of buckets. Rehashing helps maintain the time complexity of O(1) for insertion and retrieval operations.
+ 
+ Faster than %
+Works because capacity is always power of 2
+
+Step 3: Insert into Bucket
+Case 1 → Empty bucket
+table[index] = new Node(...)
+
+Collision Transverse to existing key and overrite the value
+
+Step 4: Treeify (Java 8 optimization)
+
+LinkedList → RedBlackTree
+
+Step 5: Resize if needed
+When:
+size > capacity-16 * loadFactor (default 0.75)
+13>12
+Then:
+
+Capacity doubles
+All elements rehashed
+
+4. How get() Works
+Javamap.get("Amit")
+
+Compute hash
+Find index
+Traverse bucket:
+
+Compare hash first
+Then equals() check
+
+
+class User {
+    String name;
+
+    @Override
+    public int hashCode() {
+        return 1; // BAD: forces collision
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this.name.equals(((User)o).name);
+    }
+}
+
+
+map.put(new User("A"), 1);
+map.put(new User("B"), 2);
+
+map.put(new User("B"), 2);Show more lines
+✅ Both go to same bucket → linked list/tree
+Lookup:
+hash same → equals() used to differentiate
+
+If two objects are equal → MUST have same hashCode
+a.equals(b) == true → a.hashCode() == b.hashCode()
+
+If hashCode same → equals may or may not be true
+
+put(key):
+    hashCode() → find bucket
+    equals() → check duplicate key
+
+get(key):
+    hashCode() → find bucket
+    equals() → find exact key
+	
+	
+User u1 = new User("A");
+User u2 = new User("A");
+
+map.put(u1, 1);
+map.get(u2);
+
+Collection Hierarchy
+
+Iterable
+  ├── Collection
+  │     ├── List
+  │     │    ├── ArrayList
+  │     │    ├── LinkedList
+  │     │    └── Vector
+  │     ├── Set
+  │     │    ├── HashSet
+  │     │    ├── LinkedHashSet
+  │     │    └── TreeSet
+  │     └── Queue
+  │          ├── PriorityQueue
+  │          └── Deque
+  │               ├── ArrayDeque
+  │               └── LinkedList
+  └── Map (separate hierarchy)
+        ├── HashMap
+        ├── LinkedHashMap
+        ├── TreeMap
+        └── ConcurrentHashMap
+
+Structure Backing DS  Ordering  Thread Safe Complexity
+ArrayList Dynamic Array  Yes      No            O(1)
+LinkedListDoubly Linked ListYesNoO(n)HashSetHashMapNoNoO(1)TreeSetRed-Black TreeSortedNoO(log n)PriorityQueueBinary HeapPriorityNoO(log n)HashMapArray + chain/treeNoNoO(1)TreeMapRed-Black TreeSortedNoO(log n)ConcurrentHashMapHybridNoYes
+
+✅ Key Takeaways
+
+Hash-based → fastest access
+Tree-based → sorted but slower
+Linked → good insertion/deletion
+Array-based → best random access
+ConcurrentHashMap → highly optimized thread-safe map
+
+3. ✅ Optimized Way to Extract 100000 Integers
+Scenario:
+Reading large data efficiently.
+
+Best Practices
+✅ Use primitive arrays (fastest)
+Javaint[] arr = new int[100000];Show more lines
+
+✅ Use Buffered I/O (if reading file)
+JavaBufferedReader br = new BufferedReader(new FileReader("file.txt"));Show more lines
+
+✅ Avoid Boxing (Integer)
+JavaList<Integer> list = new ArrayList<>(100000); // pre-sizeShow more lines
+
+✅ Parallel Processing (if CPU intensive)
+JavaIntStream.range(0, 100000).parallel().forEach(i -> process(i));Show more lines
+
+✅ Use Streams for pipeline
+JavaList<Integer> list = IntStream.range(0, 100000)                             .boxed()                             .collect(Collectors.toList());Show more lines
+
+Senior insight
+
+Avoid unnecessary object creation
+Use primitive streams (IntStream)
+Pre-size collections to avoid resizing
+
+
+4. ✅ Streams in Collections
+What is Stream?
+A functional pipeline to process data in declarative way.
+
+Characteristics
+
+Lazy
+Immutable (does not modify source)
+Functional
+
+
+Example
+JavaList<String> list = List.of("A", "B", "C");list.stream()    .filter(s -> s.equals("A"))    .forEach(System.out::println);Show more lines
+
+Internal Flow
+
+Source → Collection
+Intermediate ops → filter/map
+Terminal op → forEach/collect
+
+list.parallelStream().forEach(System.out::println);
+`
+Data pipelines
+Batch processing
+Transformations (ETL logic)
+
+5. ✅ Optional
+What is Optional?
+A container to avoid NullPointerException
+
+Example
+
+Optional<String> name = Optional.ofNullable(null);
+
+System.out.println(name.orElse("Default"));
+
+
+isPresent()
+get()
+orElse()
+orElseThrow()
+map()
+flatMap()
+6. ✅ Spring Boot Starter
+What is it?
+A dependency bundle that simplifies setup.
+
+Example
+XML<dependency>    <groupId>org.springframework.boot</groupId>    <artifactId>spring-boot-starter-web</artifactId></dependency>Show more lines
+
+What it includes
+
+Spring MVC
+Jackson
+Embedded Tomcat
+
+
+Types
+
+spring-boot-starter-web
+spring-boot-starter-data-jpa
+spring-boot-starter-security
+
+7. ✅ Frequency Count Problem
+Input
+Java
+List<String> str = Arrays.asList("a", "b", "b", "c", "d", "a", "c", "b");
+
+Map<String,Long> result=
+str.stream()
+.collect(Collectors
+.groupingBy(Function.identity()
+,Collectors.counting()));
+
+result.forEach((k,v)->System.out.println(k+"======"+v));
+
+Alternative 
+Map<String,Integer> map=new HashMap<>;
+for(String s:str){
+map.put(s,map.getOrDefault(s,0)+1);
+}
+8) Array Example
+int arr[] = {23, 34, 12, 22, 44};
+
+int max=Arrays.stream(arr).max().getAsInt();
+
+   int max=java.util.Arrays.stream(arr).max().getAsInt();
+        System.out.println(max);
+        java.util.Arrays.sort(arr);
+
+        List<Integer> list = java.util.Arrays.stream(arr)
+                .boxed()
+                .collect(Collectors.toList());
+9)User Api Service
+@RestController
+@RequestMapping("/user")
+public class UserController{
+
+@GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        return userService.getUser(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+}
+//Service Layer
+
+
+public Optional<User> getUser(Long id) {
+    return userRepository.findById(id);
+}
+
+1) Introduction (Lead-Level)
+“I’m a Lead Software Engineer with 9+ years of experience in designing scalable, distributed backend systems using Java, Spring Boot, and microservices architecture. I have hands-on expertise in system design, performance optimization, cloud platforms (AWS/Azure), and mentoring teams.
+I’ve led multiple projects end-to-end — from requirement gathering, solution design, development, CI/CD setup, deployment, and production support. My focus areas include:
+
+High availability & scalability
+Clean architecture (SOLID principles)
+API design & microservices
+Performance tuning
+
+I also actively contribute to code reviews, architecture discussions, and improving engineering practices.”
+
+2) About Project (Tech Stack + Deep Working)
+Example Project: E-commerce Order Management System
+✅ Tech Stack
+
+Backend: Java, Spring Boot
+Architecture: Microservices
+Database: MySQL + MongoDB
+Caching: Redis
+Messaging: Kafka / RabbitMQ
+API Gateway: Spring Cloud Gateway
+Security: OAuth2, JWT
+DevOps: Docker, Kubernetes, Jenkins
+Cloud: AWS (EC2, S3, RDS, CloudWatch)
+
+
+✅ High-Level Flow
+
+User places an order
+API Gateway routes request
+Order Service validates request
+Inventory Service checks stock
+Payment Service processes payment
+Order Service updates DB
+Event published via Kafka
+Notification Service sends email/SMS
+
+
+✅ Internal Working (Deep Dive)
+✅ Microservices Communication
+
+Synchronous → REST APIs
+Asynchronous → Kafka events
+👉 Example:
+Order Service publishes: ORDER_CREATED
+Inventory Service listens and updates stock
+
+
+✅ Database Strategy
+
+Each microservice has its own DB (Database per service)
+Avoids tight coupling
+
+
+✅ Caching
+
+Redis used for:
+
+Product details
+Frequently accessed data
+👉 Reduces DB calls → improves latency
+
+
+
+
+✅ Fault Tolerance
+
+Circuit Breaker (Resilience4j)
+Retry mechanism
+Graceful fallback
+
+
+✅ Real-world Example
+“During high sale traffic, we faced database bottlenecks. We introduced Redis caching for product catalog and reduced DB load by ~60%.”
+
+3) HashMap Internal Working + hashCode() & equals()
+✅ HashMap Working
+Step-by-step:
+
+Key → hashCode() → generates hash
+Hash → mapped to bucket index
+Entry stored in bucket (array)
+
+
+✅ Collision Handling
+
+Before Java 8 → Linked List
+Java 8+ → Tree (Red-Black Tree) if collisions > threshold
+
+
+✅ hashCode() Importance
+
+Determines bucket location
+Faster lookup
+
+👉 If poor hashCode → more collisions → performance degrades
+
+✅ equals() Importance
+
+Used to compare keys inside same bucket
+
+
+✅ Example
+JavaMap<String, String> map = new HashMap<>();map.put("A", "value1");map.put("A", "value2"); // replaces value1Show more lines
+
+✅ Real-world Scenario
+“In caching system, incorrect equals/hashCode led to duplicate cache entries and memory issues.”
+
+4) Dependency Injection (DI)
+✅ Definition
+DI is a design pattern where dependencies are injected instead of created inside class
+
+✅ Types of DI
+1. Constructor Injection ✅ (Preferred)
+Java@Serviceclass OrderService {    private final PaymentService paymentService;    public OrderService(PaymentService paymentService) {        this.paymentService = paymentService;    }}Show more lines
+
+2. Setter Injection
+Java@Autowiredpublic void setPaymentService(PaymentService paymentService) {    this.paymentService = paymentService;}Show more lines
+
+3. Field Injection ❌ (Not recommended)
+Java@Autowiredprivate PaymentService paymentShow more lines
+
+✅ Benefits
+
+Loose coupling
+Easy testing (mocking)
+Better maintainability
+
+
+✅ Real-time Example
+“In microservices, we inject RestTemplate/WebClient through DI instead of creating objects manually.”
+
+5) Functional Interface + Lambda
+✅ Functional Interface
+
+Interface with only one abstract method
+
+Example:
+Java@FunctionalInterfaceinterface Calculator {    int add(int a, int b);}Show more lines
+
+✅ Lambda Usage
+JavaCalculator calc = (a, b) -> a + b;System.out.println(calc.add(5, 10));``Show more lines
+
+✅ Real-world Usage
+In Streams:
+Javalist.stream()    .filter(x -> x > 10)    .forEach(System.out::println);Show more lines
+
+✅ Benefits
+
+Clean & concise code
+Better readability
+Functional-style programming
+
+
+6) LinkedList vs HashMap (When to Use)
+✅ LinkedList
+
+Ordered collection
+Fast insert/delete (no shifting)
+
+Use When:
+
+Frequent insert/delete
+Queue/Deque implementation
+
+👉 Example:
+
+Task scheduler
+Undo/Redo operations
+
+
+✅ HashMap
+
+Key-value pair
+Fast lookup (O(1))
+
+Use When:
+
+Fast search needed
+
+👉 Example:
+
+User session storage
+Caching
+
+
+✅ Scenario Explanation
+Scenario 1:
+“Tracking user sessions”
+👉 Use HashMap → userId → session
+
+Scenario 2:
+“Maintaining order of operations”
+👉 Use LinkedList
+
+7) If Given 5 Members + Project Doc → How Will You Start (Lead Approach)
+✅ Step 1: Requirement Analysis
+
+Understand functional & non-functional requirements
+Identify edge cases
+
+
+✅ Step 2: Architecture Design
+
+Decide:
+
+Monolith vs Microservices
+DB design
+API contracts
+
+
+
+
+✅ Step 3: Task Breakdown
+
+Create:
+
+High-level design (HLD)
+Low-level design (LLD)
+
+
+Split modules among team
+
+
+✅ Step 4: Team Allocation
+Example:
+
+Dev1 → Order Service
+Dev2 → Payment Service
+Dev3 → Inventory
+Dev4 → Integration/API
+Dev5 → DevOps/CI-CD
+
+
+✅ Step 5: Development Standards
+
+Code guidelines
+Git branching strategy
+PR review process
+
+
+✅ Step 6: CI/CD Setup
+
+Jenkins pipelines
+Docker containerization
+Deployment automation
+
+
+✅ Step 7: Development Execution
+
+Sprint planning (Agile)
+Daily standups
+Progress tracking
+
+
+✅ Step 8: Testing Strategy
+
+Unit testing (JUnit)
+Integration testing
+API testing
+
+
+✅ Step 9: Deployment
+
+Staging → UAT → Production
+Monitoring setup (logs, alerts)
+
+
+✅ Step 10: Production Readiness
+
+Load testing
+Auto-scaling
+Rollback strategy
+
+
+✅ Real-world Example
+“In my last project, I onboarded a 6-member team, created architecture diagrams, defined coding standards, and reduced production bugs by 40% through better reviews and testing.”
+
+✅ Final Tip for Interview
+Focus on:
+
+Real examples
+Decision-making
+Trade-offs
+Leadership + technical depth
+
+Dependency Injection
+Dependency Injection (DI) is a design pattern used in software development to achieve loose coupling between classes.
+
+Instead of a class creating its own dependencies, those dependencies are provided (injected) from outside.
+Dependency Injection is the process of supplying the required objects (dependencies) to a class instead of the class creating them itself.
+
+✅ Reduces tight coupling
+✅ Improves code reusability
+✅ Easier unit testing (mock dependencies)
+✅ Better maintainability and scalability
+
+class Engine {
+    void start() {
+        System.out.println("Engine started");
+    }
+}
+
+class Car {
+    private Engine engine;
+
+    public Car() {
+        this.engine = new Engine(); // tightly coupled
+    }
+
+    void drive() {
+        engine.start();
+        System.out.println("Car is running");
+    }
+}
+
+class Car{
+private Engine engine;
+
+public Car(Engine engine)
+{
+this.engine=engine;
+}
+
+    void drive() {
+        engine.start();
+    }
+
+}
+
+Engine engine = new Engine();
+Car car = new Car(engine);
+car.drive();
+
+ What is Setter Injection?
+A dependency is provided to a class after the object is created, using a setter method.
+
+
+class Car {
+    private Engine engine;
+
+    public void setEngine(Engine engine) {
+        this.engine = engine;
+    }
+}
+
+Car does NOT create Engine
+Engine is injected later using setEngine()
+
+Object is created
+JavaCar car = new Car();Show more lines
+
+
+Dependency is injected later
+Javacar.setEngine(new Engine());Show more lines
+
+
+Now object is fully usable
+Javacar.drive();``
+
+
+interface MessageService {
+    void sendMessage(String message);
+}
+
+class EmailService implements MessageService {
+    public void sendMessage(String message) {
+        System.out.println("Sending Email: " + message);
+    }
+}
+
+class SMSService implements MessageService {
+    public void sendMessage(String message) {
+        System.out.println("Sending SMS: " + message);
+    }
+}
+class NotificationService{
+private MessageService messageService;
+
+public void setMessageService(MessageService messageService){
+this.messageService=messageService;
+}
+
+ public void sendNotification(String message) {
+        if (messageService == null) {
+            System.out.println("MessageService is not set!");
+            return;
+        }
+        messageService.sendMessage(message);
+    }
+
+
+}
+
+ublic class Main {
+    public static void main(String[] args) {
+
+        NotificationService notificationService = new NotificationService();
+
+        // Inject Email Service
+        notificationService.setMessageService(new EmailService());
+        notificationService.sendNotification("Welcome User!");
+
+        // Change to SMS dynamically
+        notificationService.setMessageService(new SMSService());
+        notificationService.sendNotification("OTP: 1234");
+    }
+}
+what is linked list and hash map when we will use them -> explain scenario when to use
+
+📌 Definition
+A Linked List is a data structure where:
+
+Elements (nodes) are connected using pointers (references)
+
+Each node contains:
+
+Data
+Pointer to next node
+
+
+🔧 Structure
+Javaclass Node {    int data;    Node next;}``Show more lines
+
+🎯 Visualization
+[10] -> [20] -> [30] -> [40] -> null
+
+
+Each node points to next node
+No continuous memory required
+
+
+✅ Key Characteristics
+
+Dynamic size ✅
+Efficient insertion/deletion ✅
+Sequential access ❌ (no random access like array)
+
+
+✅ When to Use Linked List (Real Scenarios)
+
+🟢 Scenario 1: Frequent Insertions/Deletions
+👉 Example: Music Playlist App
+Add song → Remove song → Reorder songs
+
+Why Linked List?
+
+Insert/delete easily without shifting elements
+Just update pointer
+
+✅ Use Linked List when:
+
+Data frequently changes in middle
+
+
+🟢 Scenario 2: Implementing Queue or Stack
+👉 Example: Call Center Queue
+
+Calls come in → added to queue
+Calls handled → removed
+
+✅ Linked List helps:
+
+Fast add/remove operations
+
+
+🟢 Scenario 3: Undo/Redo Feature
+👉 Example: Text Editor (MS Word)
+Action1 -> Action2 -> Action3
+
+
+Undo → move backward
+Redo → move forward
+
+👉 Uses Doubly Linked List
+
+🟢 Scenario 4: Memory efficient growth
+👉 When size is unknown:
+
+Streaming data
+Real-time logs
+
+
+❌ When NOT to Use Linked List
+
+Need fast search ❌
+Need index-based access ❌
+
+
+✅ 2️⃣ What is a HashMap?
+
+📌 Definition
+A HashMap stores data in key-value pairs.
+JavaHashMap<Integer, String> map = new HashMap<>();Show more lines
+
+🔧 Example
+Javamap.put(1, "Alice");map.put(2, "Bob");``Show more lines
+
+🎯 Internally
+
+Uses hashing algorithm
+Converts key → index
+Stores value in bucket
+
+
+✅ Key Characteristics
+
+Fast lookup ✅ (O(1) average)
+No order guarantee ❌
+Unique keys ✅
+
+
+✅ When to Use HashMap (Real Scenarios)
+
+🟢 Scenario 1: Fast Lookup Required
+👉 Example: User Login System
+Javausername -> password``Show more lines
+
+Need to quickly check user credentials
+
+✅ Use HashMap:
+
+Because lookup is very fast (O(1))
+
+
+🟢 Scenario 2: Caching Data
+👉 Example: Product Cache
+JavaproductId -> productDetails``Show more lines
+
+Avoid DB calls
+Fetch instantly
+
+
+🟢 Scenario 3: Counting Frequency
+👉 Example: Word Count
+Java"apple" -> 3"banana" -> 5``Show more lines
+
+🟢 Scenario 4: Mapping Relationships
+👉 Example: Employee ID → Employee Details
+
+❌ When NOT to Use HashMap
+
+Need sorted data ❌ (use TreeMap)
+Need duplicate keys ❌
+
+
+✅ Linked List vs HashMap (Comparison)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FeatureLinked ListHashMapStructureNode chainKey-ValueAccess speedO(n)O(1)OrderingMaintainedNot guaranteedInsert/DeleteFastFastSearchSlowVery fast
+
+✅ 🔥 Real Interview Scenario
+
+🎯 Problem: LRU Cache
+👉 You need:
+
+Fast access ✅
+Maintain order ✅
+
+Solution:
+👉 Combine:
+
+HashMap → fast lookup
+Doubly Linked List → maintain order
+
+
+🎯 Problem: Social Media Feed
+
+Posts in order → Linked List
+User lookup → HashMap
+
+
+✅ 🧠 Key Takeaways
+
+👉 Use Linked List when:
+
+You need frequent insert/delete
+Order matters
+No random access needed
+
+
+👉 Use HashMap when:
+
+You need fast lookup
+Key-value mapping
+Searching is frequent
+
+
+✅ 🚀 Simple Analogy
+
+Linked List = Train 🚆
+
+Each coach connected to next
+Easy to attach/remove coaches
+
+
+HashMap = Dictionary 📘
+
+Find meaning using word (key)
+Instant lookup
+
+
+✅ Final Summary
+
+Linked List → Dynamic + Flexible structure
+HashMap → Fast searching and mapping
+
+
+If you want next:
+✅ I can explain hash map internal working (hashing + collision)
+✅ Or solve interview coding problems (LL + HashMap)
+✅ Or visualize with diagrams (step-by-step execution)
+Provide your feedback on BizChatDrop your files here
+
+✅ 1. Leading junior members & end-to-end module delivery
+✅ Approach:
+
+Requirement breakdown → Design → Task allocation → Code reviews → Delivery
+Followed Agile/Scrum
+
+✅ Real Example:
+In a payment module revamp:
+
+Conducted LLD sessions and created sequence diagrams
+Split features into:
+
+API layer
+Service layer
+DAO layer
+
+
+Assigned juniors smaller tasks like:
+
+API validation
+DTO creation
+
+
+
+✅ Mentoring:
+
+Code reviews using SonarQube + PR feedback
+Pair programming for complex logic
+Encouraged unit tests (JUnit + Mockito)
+
+✅ Ownership:
+
+Managed end-to-end lifecycle
+
+Requirement clarification
+Design decisions
+Production deployment
+Post-release support
+
+
+
+
+✅ 2. SQL → PostgreSQL Migration (Successful Go-live)
+✅ Steps followed:
+
+
+Schema Conversion
+
+Converted:
+
+NUMBER → NUMERIC
+VARCHAR2 → VARCHAR
+
+
+Handled sequences & identity columns
+
+
+
+Data Migration
+
+Used:
+
+AWS DMS / custom ETL scripts
+Batch migration to reduce downtime
+
+
+
+
+
+Query Optimization
+
+Replaced:
+
+Proprietary SQL functions
+Stored procedures rewritten in PL/pgSQL
+
+
+
+
+
+Index tuning
+
+Added GIN indexes, partial indexes
+
+
+
+Testing
+
+Data validation scripts
+Performance benchmarking
+
+
+
+✅ Real Challenge:
+
+Oracle-specific functions breaking → replaced with PostgreSQL equivalents
+
+✅ Outcome:
+
+Reduced infra cost by ~30%
+Improved query performance
+
+
+
+

@@ -1,0 +1,754 @@
+1. What is Big O notation? Common Big O Complexities?
+Big-O notation describes how the time (or space) complexity of an algorithm grows with input size n. It gives the upper bound (worst-case growth).
+
+In practical terms:
+It answers “How will this code behave when my data grows from 1K → 1M → 100M?”
+
+As a senior Java engineer, think of it as:
+
+A scalability contract
+Helps choose between readability vs performance vs trade-offs
+
+ 1. O(1) — Constant Time
+🔹 Definition
+O(1) means the execution time is constant, regardless of input size.
+
+Whether you have 10 items or 10 million items, the operation takes the same time
+No loops proportional to input size
+No recursion that depends on n
+
+👉 In short:
+
+“The cost of operation does not grow with input size.”
+
+
+🔹 Java Example (HashMap)
+JavaMap<String, Integer> map = new HashMap<>();
+map.put("A", 1);   // O(1)
+map.put("B", 2);   // O(1)
+int value = map.get("A"); // O(1)``Show more lines
+✅ Why is this O(1)?
+HashMap internally uses a hash function:
+
+Key → Hash code
+Hash → Index in array
+Direct access
+✅ Real-world use cases
+Cache lookup (Redis, HashMap)
+Feature flags
+Session/token lookup
+
+✅ Why it matters
+Even with 1 million entries, response time stays constant.
+
+Collections.binarySearch(sortedList, key);
+
+So instead of scanning all elements (O(n)), it:
+👉 Jumps directly to the bucket → constant time
+
+2. O(log n) – Logarithmic
+✅ Definition
+Problem size reduces by half each step
+
+Collections.binarySearch(sortedList, key);
+
+Searching in sorted datasets
+TreeMap / TreeSet operations
+
+JavaTreeMap<Integer, String> map = new TreeMap<>();map.put(10, "A"); // O(log n)Show more lines
+
+Database index lookup (B-tree)
+
+n = 1,000,000 → ~20 operations
+
+✅ Where you see it
+
+Query optimization
+Range queries
+Partitioned search
+
+✅ Method Signature
+Javapublic static <T> int binarySearch(List<? extends Comparable<? super T>> list, T key)Show more lines
+
+🔹 Key Requirements
+
+✅ The list must be sorted before calling this method
+
+Usually sorted using Collections.sort(list)
+
+
+✅ Elements must be comparable
+
+Either naturally (Comparable)
+Or using a custom Comparator (overloaded method)
+
+
+🔹 How Binary Search Works (Concept)
+
+It repeatedly divides the list into halves.
+Compares the middle element with the key.
+Eliminates half of the search space each time.
+
+👉 Time complexity: O(log n)
+
+🔹 Return Value Explained
+Case 1: Element FOUND
+Returns the index of the key.
+Java[10, 20, 30, 40, 50]Search: 30Result: 2Show more lines
+
+Case 2: Element NOT FOUND
+Returns a negative value:
+Java-(insertion_point) - 1Show more lines
+🔸 What is insertion_point?
+The index where the element would be inserted to keep the list sorted.
+
+Example:
+Java
+List<Integer> list = Arrays.asList(10, 20, 30, 40, 50);
+int result = Collections.binarySearch(list, 35);Show more lines
+
+35 should be inserted at index 3
+Return value = -(3) - 1 = -4
+
+
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList<>();
+        list.add(40);
+        list.add(10);
+        list.add(30);
+        list.add(20);
+
+        // Sort the list first
+        Collections.sort(list); // [10, 20, 30, 40]
+
+        int index1 = Collections.binarySearch(list, 30);
+        System.out.println(index1); // Output: 2
+
+        int index2 = Collections.binarySearch(list, 25);
+        System.out.println(index2); // Output: -3
+    }
+}
+
+class Person {
+    int age;
+    String name;
+
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+
+List<Person> people = new ArrayList<>();
+people.add(new Person("A", 25));
+people.add(new Person("B", 30));
+people.add(new Person("C", 35));
+
+// Sort using comparator
+people.sort(Comparator.comparingInt(p -> p.age));
+
+// Search
+int index = Collections.binarySearch(
+    people,
+    new Person("", 30),
+    Comparator.comparingInt(p -> p.age)
+);
+
+System.out.println(index); // Output: 1
+	FOUND → index
+NOT FOUND → -(position) - 1
+
+3) O(n) – Linear Time
+✅ Definition
+Execution time grows proportionally with input size.
+
+for (User user : userList) {
+    process(user);
+}
+
+List<Order> orders = getOrders();
+for (Order o : orders) {
+    sendNotification(o);
+}
+Works well up to millions of records
+Most common acceptable complexity
+
+Processing API response lists
+Batch processing jobs
+Log processing
+
+✅ 4. O(n log n) – Linearithmic
+✅ Definition
+Combination of linear + logarithmic growth
+✅ Java Example
+JavaCollections.sort(list); // O(n log n)Show more lines
+(TimSort in Java)
+✅ Real-world use cases
+
+Sorting large datasets
+Merging datasets
+ETL pipelines
+
+✅ Example Scenario
+You download 10M records and sort them before processing.
+✅ Insight
+
+Best possible complexity for comparison-based sorting
+Common in backend data workflows
+5. O(n²) – Quadratic Time
+✅ Definition
+Nested iterations → grows rapidly
+✅ Java Example
+Javafor (int i = 0; i < n; i++) {    for (int j = 0; j < n; j++) {        process(i, j);    }}Show more lines
+
+✅ Real-world bad example
+❌ Duplicate detection (bad approach)
+Javafor (String a : list) {    for (String b : list) {        if (a.equals(b)) { }    }}Show more lines
+👉 Complexity: O(n²)
+
+✅ Optimized version
+JavaSet<String> set = new HashSet<>(list);Show more lines
+👉 Complexity: O(n)
+
+6. O(2ⁿ) – Exponential Time
+✅ Definition
+Each input doubles the work
+✅ Java Example
+Javaint fib(int n) {    if (n <= 1) return n;    return fib(n-1) + fib(n-2);}Show more lines
+
+✅ Real-world use cases
+
+Recursive brute-force problems
+Backtracking (without pruning)
+Subset generation
+
+
+❌ Problem
+
+nOperations 10 102420~1 million 30 ~ 1 billion
+🚨 Completely impractical for large inputs
+
+ 7. O(n!) – Factorial Time
+✅ Definition
+All permutations of input
+
+✅ Example
+Java// Generating permutationsShow more lines
+
+✅ Real-world use cases
+
+Traveling Salesman Problem (brute force)
+Scheduling permutations
+
+
+❌ Growth
+
+
+nn!5120103.6M151.3T
+🚨 Impossible to scale
+Real Engineering Scenarios
+
+✅ Scenario 1: API Performance Bug
+❌ Bad Code (O(n²))
+Javafor (Order order : orders) {    users.stream()         .filter(u -> u.getId().equals(order.getUserId()))         .findFirst();}Show more lines
+
+✅ Optimized (O(n))
+JavaMap<String, User> userMap = users.stream()    .collect(Collectors.toMap(User::getId, Function.identity()));for (Order order : orders) {    userMap.get(order.getUserId());}Show more lines
+
+✅ Scenario 2: N+1 Database Problem
+❌ Bad
+Javafor (User u : users) {    orderRepo.findByUserId(u.getId()); // DB call each time}Show more lines
+👉 Not just O(n) — it's network-heavy O(n) (very slow)
+
+✅ Fix
+SQLSELECT * FROM orders WHERE user_id IN (...)Show more lines
+👉 Reduces latency drastically
+
+✅ Scenario 3: Caching Optimization
+
+
+
+
+
+
+
+
+
+
+
+
+
+Without CacheWith CacheO(n) DB scanO(1) lookup
+Javacache.get(productId);Show more lines
+
+✅ Scenario 4: Sorting Once vs Repeated Search
+Bad:
+Javafor (...) {    list.contains(x); // O(n)}Show more lines
+Good:
+JavaCollections.sort(list); // O(n log n)binarySearch(list, x);  // O(log n)Show more lines
+
+⚙️ Senior-Level Takeaways
+✅ Always analyze:
+
+Nested loops → O(n²)
+Lookups → use HashMap (O(1))
+Sorting → O(n log n)
+External calls → treat as expensive operation
+
+
+✅ Rule of Thumb
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Input SizeSafe Complexity< 1KO(n²) OK< 1MO(n log n)> 1MO(n)Real-timeO(1), O(log n)
+
+✅ Key Performance Tricks
+
+Replace loop-inside-loop with Map/Set
+Avoid DB/API calls inside loops
+Pre-process data (indexing)
+Trade memory for speed when needed
+
+
+🚀 Final Summary
+
+ComplexityPractical MeaningO(1)InstantO(log n)Very fastO(n)ScalableO(n log n)AcceptableO(n²)RiskyO(2ⁿ), O(n!)Avoid
+
+2. Time Complexity of Binary Search algorithm?
+Binary Search is one of the most important O(log n) algorithms and is widely used in high-performance systems.
+
+🔍 1. What is Binary Search?
+Binary Search is used to find an element in a sorted array/list by repeatedly dividing the search space into half.
+
+✅ Basic Idea
+
+Find middle element
+Compare with target:
+
+If equal → done
+If target < mid → search left half
+If target > mid → search right half
+
+
+Repeat until found or range is empty
+
+
+✅ Java Example
+Javaint binarySearch(int[] arr, int target) {    int left = 0, right = arr.length - 1;    while (left <= right) {        int mid = left + (right - left) / 2;        if (arr[mid] == target)            return mid;        else if (arr[mid] < target)            left = mid + 1;        else            right = mid - 1;    }    return -1;}Show more lines
+
+⏱️ 2. Time Complexity Analysis
+Let’s break it down step by step.
+
+✅ Step-wise Reduction
+Each iteration halves the array:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+StepElements Remaining1n2n/23n/44n/8kn / 2^k
+We stop when:
+n / 2^k = 1
+
+Solve:
+n = 2^k
+k = log₂(n)
+
+👉 So, total steps = log₂(n)
+
+✅ Final Time Complexity
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CaseComplexityBest CaseO(1)Average CaseO(log n)Worst CaseO(log n)
+
+✅ Case-by-case explanation
+✅ Best Case: O(1)
+
+Target is exactly at middle
+
+Javaarr[mid] == target  // first checkShow more lines
+
+✅ Worst Case: O(log n)
+
+Element is at extreme end OR not present
+
+Example:
+Search in: [1,2,3,4,5,6,7,8]
+Target = 8
+
+Steps:
+
+Check 4 → go right
+Check 6 → go right
+Check 7 → go right
+Check 8 → found
+
+👉 ~log₂(n) steps
+
+✅ Average Case: O(log n)
+
+Typical scenario → half space reduction each time
+
+
+📊 3. Real-Time Example (Senior-Level Understanding)
+
+✅ Scenario: Searching User in Large Dataset
+You have:
+10 million sorted user IDs
+
+
+✅ Linear Search
+Javafor (int id : userIds) {    if (id == target) return true;}Show more lines
+👉 Complexity: O(n)
+👉 Worst-case: 10 million checks
+
+✅ Binary Search
+JavaArrays.binarySearch(userIds, target);Show more lines
+👉 Complexity: O(log n)
+👉 Steps:
+log₂(10,000,000) ≈ 24
+
+🚀 Only ~24 comparisons instead of 10 million
+
+✅ Scenario: Database Index
+
+DB uses B-Tree
+Search time = O(log n)
+
+Example:
+SQLSELECT * FROM users WHERE id = 100;Show more lines
+👉 Uses index → behaves like binary search
+
+✅ Scenario: API Latency Optimization
+If your service:
+
+Uses list scan → O(n)
+Switches to sorted + binary search → O(log n)
+
+👉 Latency improves drastically under load
+
+⚠️ 4. Important Conditions
+✅ Binary search works ONLY when:
+
+Data is sorted
+Random access available (array, not linked list)
+
+
+❌ Wrong usage example
+JavaLinkedList<Integer> list;Show more lines
+👉 Binary search becomes inefficient due to O(n) access
+
+🔄 5. Recursive vs Iterative
+✅ Recursive version
+Java
+int binarySearch(int[] arr, int left, int right, int target) 
+{    if (left > right) return -1;   
+ int mid = (left + right) / 2;    
+ if (arr[mid] == target) return mid;    
+ else if (arr[mid] > target)        
+ return binarySearch(arr, left, mid - 1, target);   
+ else        return binarySearch(arr, mid + 1, right, target);
+ }
+ 
+ Show more lines
+👉 Time Complexity: O(log n)
+👉 Space Complexity: O(log n) (call stack)
+
+✅ Iterative version
+👉 Preferred in production
+👉 Space Complexity: O(1)
+
+
+public class BinarySearch {
+
+    public static int binarySearch(int[] arr, int target) {
+        int left = 0;
+        int right = arr.length - 1;
+
+        while (left <= right) {
+            // Prevents overflow
+            int mid = left + (right - left) / 2;
+
+            if (arr[mid] == target) {
+                return mid; // ✅ Found
+            } else if (arr[mid] < target) {
+                left = mid + 1; // search right half
+            } else {
+                right = mid - 1; // search left half
+            }
+        }
+
+        return -1; // ❌ Not found
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 3, 5, 7, 9};
+        int target = 7;
+
+        int result = binarySearch(arr, target);
+
+        if (result != -1) {
+            System.out.println("Element found at index: " + result);
+        } else {
+            System.out.println("Element not found");
+        }
+    }
+}
+
+
+⚙️ 6. Practical Trade-offs
+
+ApproachTimeWhen to UseLinear SearchO(n)Unsorted dataBinary SearchO(log n)Sorted dataHashMapO(1)Key-based lookup
+
+🚀 7. Senior-Level Insights
+✅ Use Binary Search When:
+
+Data is sorted
+Data size is large (>1M)
+Memory constraints prevent HashMap
+Range queries needed
+
+
+✅ Avoid When:
+
+Data frequently changes (sorting cost high)
+LinkedList (no random access)
+Data unsorted
+
+
+✅ Advanced Use Cases
+
+Search in rotated sorted array
+Finding first/last occurrence
+Peak element problems
+Monotonic functions
+
+
+🧠 Final Summary
+
+Binary Search reduces problem size by half
+Time Complexity = O(log n)
+Very efficient for large datasets
+Widely used in:
+
+Databases (indexes)
+Search systems
+Range queries
+
+
+
+
+✅ One-line takeaway:
+👉 Binary Search turns “millions of comparisons” into just “a few dozen steps.”
+
+3. OOPs principles and different design patterns in Java?
+
+OOP PRINCIPLES IN DEPTH
+1. Encapsulation
+Definition
+
+Encapsulation means:
+
+Hiding internal state and exposing behavior through controlled APIs.
+
+Beginner Understanding
+class Employee {
+    private int salary;
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+}
+
+But senior engineers must think beyond getters/setters.
+
+Senior-Level Perspective
+
+Encapsulation is about:
+
+Protecting invariants
+Preventing invalid states
+Reducing coupling
+Domain-driven design
+API contracts
+BAD Example (Anemic Model)
+class BankAccount {
+    public double balance;
+}
+
+Anyone can do:
+
+account.balance = -100000;
+
+This breaks business rules.
+
+GOOD Example
+class BankAccount {
+
+    private double balance;
+
+    public void deposit(double amount) {
+        validateAmount(amount);
+        balance += amount;
+    }
+
+    public void withdraw(double amount) {
+        validateAmount(amount);
+
+        if(balance < amount) {
+            throw new InsufficientFundsException();
+        }
+
+        balance -= amount;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    private void validateAmount(double amount) {
+        if(amount <= 0) {
+            throw new IllegalArgumentException();
+        }
+    }
+}
+Real-Time Enterprise Example
+Payment Service
+
+In fintech systems:
+
+You NEVER expose:
+card number
+CVV
+account balance directly
+
+Instead:
+
+paymentService.processPayment()
+
+Internals remain hidden.
+
+This protects:
+
+Security
+PCI compliance
+Fraud vulnerabilities
+Benefits of Encapsulation
+Benefit	Real Impact
+Security	Prevents invalid data
+Loose coupling	Easy refactoring
+Validation	Maintains domain integrity
+Maintainability	Internal changes hidden
+Thread safety	Controlled mutation
+Encapsulation + Microservices
+
+In microservices:
+
+Service API = encapsulated boundary
+Internal DB schema hidden
+Clients only know contracts
+
+Example:
+
+POST /payments
+
+Clients never know:
+
+tables
+joins
+caching
+Kafka events
+4. System Design Documentation in Project?
+5. Waterfall vs Agile SDLC? JIRA?
+6. How to configure Spring Boot Application for best performance?
+7. REST API design – naming convention, versioning, custom exception handling and error response
+8. Key mindset for high performance in Spring Data JPA?
+9. Is It OK to Use JPA Entities in Controller?
+10. MVC architecture?
+11. N+1 problem, Eager vs Lazy loading
+12. SQL queries related to joins
+13. How did you design and develop a project module end to end with the help of junior team members?
+14. Batch processing using Control-M – architecture and flow?
+15. How to ensure atomicity and consistency in microservices?
+16. How to handle distributed transactions in microservices?
+17. SAGA pattern – Choreography and Orchestration
+18. How to handle fault tolerance in microservices?
+19. How to remove shared database dependency?
+20. About CI/CD and Jenkins
+21. Questions on Junit and Mockito, SonarQube, code quality, security practices
+22. How did you resolve performance bottlenecks in application?
+23. Major features released in Java 8, 11 and 17
+24. What is READ UNCOMMITTED?
+25. Spring Transaction – self-invocation problem and how to resolve it?

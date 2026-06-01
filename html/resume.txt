@@ -1,0 +1,34 @@
+Resume
+Nikita Shinde
+Software Developer
+Website: google.com
+Phone: 7820939634
+Email: nikita.tanaji-shinde@capgemini.com
+ 
+Hi! I'm Nikita Shinde and this is my 1st assignment.
+ 
+Skills
+Java
+Spring boot
+Microservices
+Hibernate
+Oracle
+Docker
+AWS
+ 
+Work History
+Java Developer
+ISG
+2+ years
+ 
+Jr. Java Developer
+Rezolut
+2.5 years
+ 
+Portfolio
+ 
+I am working on HTML
+ 
+Mailing address
+111 Main St.
+somewhere, NY 555455

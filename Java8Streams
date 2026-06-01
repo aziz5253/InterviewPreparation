@@ -1,0 +1,63 @@
+. ForkJoinPool Internals (Deep Dive)
+Parallel streams are powered by the ForkJoinPool, introduced in Java 7.
+Divide and Conquer
+
+Split task recursively
+Execute in parallel
+Merge results
+
+Work-Stealing Algorithm (Most Important)
+ Its own deque (double-ended queue)
+Threads pushes the task in their own queue
+excecute the task from LIFO
+
+When thread becomes idle
+It steal task from bottom FIFO of another thread
+
+Why this works:
+✔ reduces contention
+✔ improves CPU utilization
+✔ balances load automatically
+
+🔹 3. Task Splitting Strategy
+Splitting continues until:
+Javatask size < threshold``Show more lines
+👉 Choosing threshold is critical
+
+Too small → overhead
+Too large → less parallelism
+
+🔹 4. Fork vs Join
+
+ Collector Characteristics
+Important flags:
+
+CONCURRENT
+UNORDERED
+IDENTITY_FINISH
+
+Collectors.toSet();
+Helps optimize parallel processing.s
+Collectors.groupingBy(Employee::getDept)
+
+Collectors.groupingByConcurrent(Employee::getDept)
+
+employees.stream().collect(Collectors.groupingBy(Employee::getDept,Collectors.counting()));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MethodMeaningfork()Submit task asynchronouslyjoin()Wait & get result

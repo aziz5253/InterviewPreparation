@@ -1,0 +1,1331 @@
+Spring Cloud provides tools to build distributed microservices systems:
+
+Spring Boot REST
+JPA
+Security basics
+Multithreading
+Design patterns (at least 5)
+
+Config Server → centralized config
+Service Discovery → Eureka
+Load Balancing
+Circuit Breaker
+API Gateway
+  
+  +------------------+
+             |   API Gateway    |
+             |------------------|
+             | Auth Filter ✅   |
+             | Rate Limit ✅    |
+             | Logging ✅       |
+             +--------+---------+
+                      |
+  -----------------------------------------
+  |              |                        |
+USER         ORDER SERVICE        PAYMENT SERVICE
+
+1)Spring Cloud COnfig
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-config-server</artifactId>
+		</dependency>
+ Add this annotation in startup application
+ @EnableConfigServer
+server:
+	port:8888
+
+spring:
+	profile:
+		active:native
+	cloud:
+		config:
+			server:
+				native:
+					search-locations: file:///C:/config-repo/
+
+Now configure user-service.yml and order-service.yml in this folder contain generic configuration for both
+in user-service.yml
+server:
+	port:8081
+
+eureka:
+	client:
+		service-url:
+			defaultZone: http://localhost:8761/eureka
+
+order-service.yml
+
+server:
+ port:8082
+
+eureka:
+	client:
+		service-url:
+			defaultZone: http://localhost:8761/eureka
+
+2)Eureka Discovery Server
+
+		<spring-cloud.version>2025.0.2</spring-cloud.version>
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+
+Add @EnableEurekaServer in spring boot application
+
+server:
+	port:8761
+	
+eureka:
+	client:
+		register-with-eureka: false
+		fetch-registry: false
+3)Create User Service
+
+<spring-cloud.version>2025.0.2</spring-cloud.version>
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+//application.yml
+
+spring:
+	application:
+		name: user-service
+
+config:
+	import: "configserver:http://localhost:8888"
+
+//Controller
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @GetMapping("/{id}")
+    public String getUser(@PathVariable int id){
+        return "User:"+id;
+    }
+}
+
+4)Create Order Service with this dependency
+
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+//application.yml
+
+spring:
+	application:
+		name: order-service
+
+config:
+	import: "configserver:http://localhost:8888"
+
+
+//@EnableEurekaDiscoveryClient 
+it is optional after spring boot 2.0 
+
+//Configuration
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+}
+
+//OrderService
+
+@Service
+public class OrderService {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public String createOrder(int id){
+
+        //Calling USER Service
+
+        String user=restTemplate.getForObject(
+                "http://user-service/users/"+id,String.class);
+
+        return "Order Created for -> "+user;
+
+    }
+}
+
+//OrderController
+
+@RestController
+@RequestMapping("/orders")
+public class OrderController {
+
+    @Autowired
+    private OrderService orderService;
+
+    @GetMapping("/{id}")
+    public String createOrder(@PathVariable int id){
+        return orderService.createOrder(id);
+    }
+}
+How to create instance using intellij by adding 3 instance
+--server.port=8087
+--server.port=8087
+--server.port=8087
+
+5)Add Circuit Breaker in Order Service
+
+//Need to Add  this dependency for circuit breaker
+
+<dependency>
+  <groupId>io.github.resilience4j</groupId>
+  <artifactId>resilience4j-spring-boot2</artifactId>
+</dependency>
+	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
+//Need to add this annotation on spring startup
+@EnableAspectJAutoProxy
+
+//In the service class need to circuitbreaker annotation on method calling another service
+
+ @CircuitBreaker(name = "userService", fallbackMethod = "fallback")
+    public String createOrder(int id){
+
+        //Calling USER Service
+
+        //if (true) throw new RuntimeException("Test failure");
+        String user=restTemplate.getForObject(
+                "http://user-service/users/"+id,String.class);
+
+        return "Order Created for -> "+user;
+
+    }
+
+
+    public String fallback(int id, Throwable ex) {
+        return "Fallback response due to: " + ex.getMessage();
+    }
+//Need to make changes in config server for order-service.yml
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        recordExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.lang.Exception
+
+1)You can restart order service
+2)If Actuator is used add this properties management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh 
+and execute this endpoints
+POST /actuator/refresh restart will not be required
+3)Using spring cloud bus
+POST /actuator/bus-refresh
+This refreshes ALL services automatically
+Circuit Breaker Tested in this scenarios
+SCENARIO 1: Downstream Service DOWN ✅
+Steps:
+
+
+Start:
+
+order-service ✅
+user-service ✅
+eureka ✅
+
+Call API → works ✅
+STOP:
+
+✅ ✅ SCENARIO 2: Manual Exception in Downstream ✅
+In user-service:
+Java@GetMapping("/{id}")public String getUser(@PathVariable int id) {    throw new RuntimeException("Simulated failure");}
+
+Steps:
+
+Keep user-service running ✅
+Call API
+
+
+Expected:
+🔥 FALLBACK TRIGGERED: Simulated failure
+Fallback response
+
+✅ ✅ SCENARIO 3: Timeout (VERY IMPORTANT ✅)
+Modify user-service:
+Java@GetMapping("/{id}")public String getUser(@PathVariable int id) throws InterruptedException {    Thread.sleep(10000); // 10 sec delay    return "User";
+
+Modify this method in order service
+
+@CircuitBreaker(name = "userService", fallbackMethod = "fallback")
+@TimeLimiter(name = "userService")
+public CompletableFuture<String> getUser() {
+    return CompletableFuture.supplyAsync(() -> restTemplate.getForObject("http://user-service/1", String.class));
+}
+
+public CompletableFuture<String> fallback(Throwable t) {
+    return CompletableFuture.completedFuture("Fallback User");
+}
+
+Modiffy order-service.yml property file
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        registerHealthIndicator: true
+        timeout-duration: 2s
+        recordExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.lang.Exception
+
+✅ ✅ SCENARIO 5: Circuit Breaker OPEN State ✅
+Config:
+YAMLresilience4j:  circuitbreaker:    instances:      userService:        sliding-window-size: 4        minimum-number-of-calls: 4        failure-rate-threshold: 50Show more lines
+
+
+Steps:
+
+
+Make 4 calls:
+
+3 failures
+1 success
+
+
+
+Failure rate = 75%
+
+
+
+Result:
+Circuit opens ✅
+Next calls → no service call
+→ directly fallback ✅
+
+Changes should be made in order-service.yml as given below
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        sliding-window-size: 4
+        minimum-number-of-calls: 4
+        failure-rate-threshold: 50
+
+sliding-window-size: 4
+Circuit breaker remembers the last 4 calls
+
+minimum-number-of-calls: 4
+
+It won’t calculate failure rate until 4 calls are made
+
+🔹 failure-rate-threshold: 50
+
+If ≥ 50% calls fail, circuit will OPEN
+
+3. Your Scenario Execution
+🔹 Step 1: Make 4 Calls
+
+Call #Result1❌ Fail2❌ Fail3❌ Fail4✅ Success
+
+3. Your Scenario Execution
+🔹 Step 1: Make 4 Calls
+
+Call #Result1❌ Fail2❌ Fail3❌ Fail4✅ Success
+
+✅ ✅ SCENARIO 6: HALF-OPEN STATE ✅
+Add config:
+YAMLwait-duration-in-open-state: 10spermitted-number-of-calls-in-half-open-state: 2Show more lines
+
+Need to modify this two changes in property file
+
+wait-duration-in-open-state: 10s
+permitted-number-of-calls-in half-open-state: 2
+Steps:
+
+CB opens ✅
+Wait 10 seconds
+Make request
+
+Behavior:
+
+ConditionResultSuccessCircuit closes ✅FailureCircuit opens again ✅
+
+✅ ✅ SCENARIO 7: No Instances Available (Eureka Case) ✅
+Steps:
+
+Stop ALL instances of user-service
+Call API
+
+Expected:
+No instances available
+
+⚠️ Note:
+👉 This may not trigger fallback automatically
+👉 Handle explicitly with try-catch if needed
+
+✅ ✅ SCENARIO 8: High Load / Stress ✅
+Simulate multiple calls:
+Using Postman / curl:
+call API 20–30 times quickly
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        sliding-window-size: 10
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+
+
+Behavior:
+
+Failures increase
+Circuit opens
+Fallback starts triggering ✅
+
+
+✅ ✅ SCENARIO 9: Direct Failure Inside Method ✅
+Java@CircuitBreaker(name = "userService", fallbackMethod = "fallback")public String createOrder(int id) {    throw new RuntimeException("Direct failure");}Show more lines
+
+Expected:
+Fallback ALWAYS triggered ✅
+
+
+✅ ✅ SCENARIO 10: Retry + Circuit Breaker ✅
+YAMLresilience4j:  retry:    instances:      userService:        max-attempts: 3Show more lines
+
+Behavior:
+Call fails → Retry
+Still fails → CircuitBreaker
+→ Fallback ✅
+
+
+✅ ✅ DEBUGGING TIPS (VERY IMPORTANT)
+Add logs:
+Javapublic String fallback(int id, Throwable ex) {    System.out.println("🔥 FALLBACK: " + ex.getClass().getName());    return "Fallback response";}Show more lines
+
+✅ Check Circuit State
+Enable actuator:
+YAMLmanagement:  endpoints:    web:      exposure:        include: circuitbreakersShow more lines
+Call:
+http://localhost:8080/actuator/circuitbreakers
+
+
+✅ ✅ CIRCUIT STATES SUMMARY
+
+StateMeaningCLOSEDNormalOPENFallback directlyHALF_OPENTrial mode
+
+✅ ✅ FULL TEST FLOW (BEST PRACTICE ✅)
+👉 Follow this order:
+
+✅ Manual exception
+✅ Stop service
+✅ Timeout
+✅ Failure threshold (open state)
+✅ Half-open test
+
+
+✅ ✅ FINAL INTERVIEW ANSWER
+
+“To test Circuit Breaker fallback, we simulate failures such as service downtime, exceptions, timeouts, and high failure rates. These conditions trigger the circuit breaker, transitioning it from closed to open state and invoking fallback methods. Monitoring tools like Actuator endpoints help verify circuit states.”
+
+
+✅ ✅ FINAL SUMMARY
+✔ Fallback works only on failure
+✔ Must simulate failures intentionally
+✔ Test multiple scenarios
+✔ Check circuit states
+✔ Use logs + actuator
+
+✅ STEP 6: Create PAYMENT SERVICE
+
+✅ New Project → payment-service
+Dependencies:
+✔ Spring Web
+✔ Eureka Client
+
+✅ Controller
+Java@RestController@RequestMapping("/payments")public class PaymentController {    @GetMapping("/{id}")    public String pay(@PathVariable int id) {        return "Payment success for " + id;    }
+
+✅ STEP 7: Create API GATEWAY
+
+✅ New Project → api-gateway
+Dependencies:
+✔ Spring Cloud Gateway
+✔ Eureka Client
+
+✅ application.yml
+YAMLserver:  port: 8080spring:  cloud:    gateway:      routes:        - id: user          uri: lb://USER-SERVICE          predicates:            - Path=/users/**        - id: order          uri: lb://ORDER-SERVICE          predicates:            - Path=/orders/**Show more lines
+
+✅ Gateway = Entry point
+
+This 3 dependecy is required
+<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+		</dependency>
+This are the property file changes
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+          - id: user_service
+            uri: lb://USER-SERVICE
+            predicates:
+              - Path=/users/**
+
+          - id: order_service
+            uri: lb://ORDER-SERVICE
+            predicates:
+              - Path=/orders/**
+
+          - id: payment_service
+            uri: lb://PAYMENT-SERVICE
+            predicates:
+              - Path=/payments/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+Now you can test any microservice with url
+localhost:8080/users/1
+localhost:8080/orders/1
+
+Add Cross-Cutting Concern (Logging Filter)
+
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class LoggingFilter implements GlobalFilter {
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+        System.out.println("Incoming Request: " + exchange.getRequest().getURI());
+
+        return chain.filter(exchange)
+                .then(Mono.fromRunnable(() -> {
+                    System.out.println("Response Status: " +
+                            exchange.getResponse().getStatusCode());
+                }));
+    }
+}
+
+  main:
+    web-application-type: reactive
+
+JWT Token in Gateway
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+    <!-- API -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+
+    <!-- Implementation -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <!-- JSON support -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+
+io.jsonwebtoken
+jjwt-api
+jjwt-impl
+jjwt-jackson
+
+//Add Security Code in Api Gateway
+
+package com.api.gateway.config;
+
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+
+        return http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)   // ✅ disable CSRF
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/auth/**").permitAll()   // ✅ allow login
+                        .anyExchange().permitAll()
+                )
+                .build();
+    }
+
+
+}
+
+//Adding jws util
+
+package com.api.gateway.config;
+
+import io.jsonwebtoken.Jwts;
+import org.springframework.stereotype.Component;
+
+@Component
+public class JWTUtil {
+
+    private final String SECRET = "myverystrongsecretkeythatisatleast32chars";
+
+
+
+
+    public String extractUsername(String token){
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
+    }
+
+    public boolean validateToken(String token){
+        try{
+            Jwts.parserBuilder()
+                    .setSigningKey(SECRET.getBytes())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+
+    }
+}
+
+//Adding JwsAuth Filter
+
+package com.api.gateway.config;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+
+@Component
+public class JWTAuthFilter implements GlobalFilter {
+
+    @Autowired
+    private  JWTUtil jwUtil;
+
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        String path=exchange.getRequest().getURI().getPath();
+
+        //Allows login endpoint
+        if(path.contains("/auth")){
+            return chain.filter(exchange);
+        }
+
+        String token=exchange.getRequest().getHeaders().getFirst("Authorization");
+
+        System.out.println("Token======"+token);
+        if(token==null || !token.startsWith("Bearer ")){
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+        token=token.substring(7);
+
+        if(!jwUtil.validateToken(token)){
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+        return chain.filter(exchange);
+    }
+}
+
+//addin routing of auth url in application.yml
+
+
+spring:
+  application:
+    name: gateway
+
+  main:
+    web-application-type: reactive
+
+  cloud:
+    gateway:
+      default-filters:
+        - PreserveHostHeader
+
+      server:
+        webflux:
+          routes:
+            - id: user_service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/users/**
+
+            - id: order_service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/orders/**
+
+            - id: payment_service
+              uri: lb://PAYMENT-SERVICE
+              predicates:
+                - Path=/payments/**
+
+            - id: auth-service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/auth/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+//In UserService add auth Server
+
+package com.user.service.controller;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+    private final String SECRET = "myverystrongsecretkeythatisatleast32chars";
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username) {
+
+        return Jwts.builder()
+                .setSubject(username)
+                .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
+                .compact();
+    }
+}
+//This auth service will give auth token
+http://localhost:8080/auth/login?username=shabbir
+and from this auth token any api will be called by passing this token in header of Authorization
+
+//RateLimiting in Api Gateway
+
+	<!-- Redis -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+			</dependency>
+
+			<!-- Actuator (optional) -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-actuator</artifactId>
+			</dependency>
+//Modified application.yml with this
+
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10#Max Burst
+                key-resolver: "#{@userKeyResolver}"
+replenishRateRequests allowed per secondburstCapacityMax sudden spikekey-resolverIdentifies user/IP
+👉 This uses Token Bucket Algorithm internally
+
+//Adding Configuration
+package com.api.gateway.config;
+
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Mono;
+
+@Configuration
+public class RateLimiterConfig {
+
+    @Bean
+    public KeyResolver userKeyResolver() {
+        return exchange -> {
+            String apiKey = exchange.getRequest().getHeaders().getFirst("X-API-KEY");
+
+            if (apiKey == null) {
+                return Mono.just(exchange.getRequest().getRemoteAddress().getAddress().getHostAddress());
+            }
+
+            return Mono.just(apiKey);
+        };
+    }
+}
+//Modify application.yml in gateway
+
+
+spring:
+  application:
+    name: gateway
+
+  main:
+    web-application-type: reactive
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cloud:
+    gateway:
+      default-filters:
+        - PreserveHostHeader
+
+      server:
+        webflux:
+          routes:
+
+            # ✅ USER SERVICE
+            - id: user_service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/users/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 5
+                    redis-rate-limiter.burstCapacity: 10
+                    key-resolver: "#{@userKeyResolver}"
+
+            # ✅ ORDER SERVICE
+            - id: order_service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/orders/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 2
+                    redis-rate-limiter.burstCapacity: 5
+                    key-resolver: "#{@userKeyResolver}"
+
+            # ✅ PAYMENT SERVICE
+            - id: payment_service
+              uri: lb://PAYMENT-SERVICE
+              predicates:
+                - Path=/payments/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 2
+                    redis-rate-limiter.burstCapacity: 5
+                    key-resolver: "#{@userKeyResolver}"
+
+            # ✅ AUTH (NO RATE LIMIT — IMPORTANT)
+            - id: auth_service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/auth/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.ratelimit: DEBUG
+
+
+
+1..5 | ForEach-Object {
+    Invoke-WebRequest `
+        -Uri "http://localhost:8080/users/1" `
+        -Method GET `
+        -Headers @{
+            "Authorization" = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaGFiYmlyIn0.tIRU6UnQG5M0jMv06emvDIbN7wValLVq-C1jMzHxMOk";
+            "X-API-KEY" = "test-user"
+        }
+}
+1..20 | ForEach-Object {
+    Invoke-WebRequest `
+        -Uri "http://localhost:8080/users/1" `
+        -Method GET `
+        -Headers @{
+            "Authorization" = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaGFiYmlyIn0.tIRU6UnQG5M0jMv06emvDIbN7wValLVq-C1jMzHxMOk";
+            "X-API-KEY" = "test-user"
+        }
+}
+
+//Parallel
+1..20 | ForEach-Object {
+    Start-Job {
+        try {
+            Invoke-WebRequest `
+                -Uri "http://localhost:8080/users/1" `
+                -Method GET `
+                -Headers @{
+                    "Authorization" = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaGFiYmlyIn0.tIRU6UnQG5M0jMv06emvDIbN7wValLVq-C1jMzHxMOk";
+                    "X-API-KEY" = "test-user"
+                }
+            Write-Output "200 OK"
+        } catch {
+            Write-Output "429 TOO MANY REQUESTS"
+        }
+    }
+}
+//Sequential
+1..20 | ForEach-Object {
+    try {
+        $response = Invoke-WebRequest `
+            -Uri "http://localhost:8080/users/1" `
+            -Method GET `
+            -Headers @{
+                "Authorization" = "Bearer eyJhbGciOiJIUzI1NiJ9...";
+                "X-API-KEY" = "test-user"
+            }
+        Write-Output "Status: $($response.StatusCode)"
+    } catch {
+        Write-Output "Status: $($_.Exception.Response.StatusCode.value__)"
+    }
+}
+
+//Saga Pattern
+
+Client
+   ↓
+API Gateway
+   ↓
+Order Service → Kafka → Payment Service → Kafka → Inventory Service
+   ↑                                                  ↓
+   ←------------- Compensation Flow ------------------←
+
+Infrastructure:
+- Config Server
+- Eureka Server
+- Kafka Broker
+
+In Order Service this two dependency is added
+
+    <!-- JPA -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+	<!-- Kafka -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
+
+		<!-- DB -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+
+//In application.yml
+
+server:
+  port: 8082
+
+spring:
+  application:
+    name: order-service
+
+  kafka:
+    bootstrap-servers: 192.168.224.188:9092
+
+    consumer:
+      group-id: order-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        registerHealthIndicator: true
+        sliding-window-size: 5
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        recordExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.lang.Exception
+
+  retry:
+    instances:
+      userService:
+        max-attempts: 3
+        wait-duration: 500ms
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
+
+
+Created Method in OrderController
+
+  @PostMapping
+    public String create() {
+        return orderService.createOrderDetails();
+    }
+
+//Consumer
+
+package com.order.service.config;
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class OrderConsumer {
+
+    @KafkaListener(topics="payment-failed")
+    public void cancel(String orderId){
+        System.out.println("OrderConsumer.cancel"+ orderId);
+    }
+
+    @KafkaListener(topics="inventory-sucess")
+    public void confirm(String orderId){
+        System.out.println("Order Confirmed=="+orderId);
+    }
+}
+
+//Payment Service
+//In application.yml
+server:
+  port: 8090
+
+eureka:
+  client:
+    service-url:
+        defaultZone: http://localhost:8761/eureka 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh        
+
+spring:
+  kafka:
+    bootstrap-servers: 192.168.224.188:9092
+
+    consumer:
+      group-id: payment-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+<dependencies>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    </dependency>
+
+</dependencies>
+
+package com.payment.service.config;
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PaymentConsumer {
+
+    private KafkaTemplate<String,Object> kafka;
+
+    @KafkaListener(topics="order-created")
+    public void process(String orderId){
+
+        boolean success=true;
+
+        if(success){
+            kafka.send("payment-success",orderId);
+        }
+        else{
+            kafka.send("payment-failed",orderId);
+        }
+
+    }
+
+    @KafkaListener(topics = "inventory-failed")
+    public void refund(String orderId) {
+
+        System.out.println("Refund done: " + orderId);
+
+        kafka.send("payment-refunded", orderId);
+    }
+
+}
+//In applcaition.yml
+server:
+  port: 8090
+
+eureka:
+  client:
+    service-url:
+        defaultZone: http://localhost:8761/eureka 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh        
+
+spring:
+  kafka:
+    bootstrap-servers: 192.168.224.188:9092
+
+    consumer:
+      group-id: payment-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+//Inventoryy Service
+
+<dependencies>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    </dependency>
+
+</dependencies>
+
+//Inventory.yml
+server:
+  port: 8092
+
+eureka:
+  client:
+    service-url:
+        defaultZone: http://localhost:8761/eureka
+
+
+spring:
+  kafka:
+    bootstrap-servers: 192.168.224.188:9092
+
+    consumer:
+      group-id: inventory-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+//Component
+package com.inventory.serviceDetails.config;
+
+import jakarta.annotation.PostConstruct;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class InventoryConsumer {
+
+    private KafkaTemplate<String,Object> kafka;
+
+
+    @PostConstruct
+    public void init() {
+        System.out.println("✅ OrderConsumer initialized");
+    }
+
+    @KafkaListener(topics="payment-success")
+    public void reserve(String orderId){
+        boolean success=true;
+
+        if(success){
+            System.out.println("Inside Inventory Payment Succes Event");
+            kafka.send("inventory-success",orderId);
+        }
+        else{
+            System.out.println("Inside Inventory Payment Failed Event");
+            kafka.send("inventory-failed",orderId);
+        }
+    }
+
+}
+
+Order Service->kafka event order created->Payment Service->Kafka->Listen to order created event and trigger payment-success or payment-failed event->Inventory service->listen to payment-suceess and trigger inventorys-success or failed event|
+																												Compensated Transaction	|
+																												If inventory success order service read the event and  order created<- --|
+																												If inventory-failed payment service read the event and payement-refund even triggered
+																												payment-refund event is listen by order service and order canceled
+																												
+																												If payment-failed event triggered order-service listen the even and order-cancelled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

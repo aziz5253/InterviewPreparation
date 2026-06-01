@@ -1,0 +1,414 @@
+JAVA 8 – 
+
+LAMBDA & FUNCTIONAL INTERFACE
+
+1. What is a functional interface?
+
+2. Is @FunctionalInterface mandatory?
+
+3. Can a functional interface have default methods?
+
+4. Why were lambdas introduced?
+
+5. Lambda vs anonymous class
+
+STREAM API (MOST IMPORTANT)
+
+6. Stream vs Collection
+
+7. Intermediate vs Terminal operations
+
+8. map() vs flatMap()
+
+9. filter() vs map()
+
+10. findFirst() vs findAny()
+
+11. limit() vs skip()
+
+12. peek() – real use case
+
+13. forEach vs forEachOrdered
+
+14. reduce() explained with example
+
+15. collect() – internal working
+
+16. groupingBy() vs partitioningBy()
+
+17. How to remove duplicates using Stream?
+
+18. Parallel stream – when NOT to use?
+
+19. Stream performance vs for-loop
+
+20. Can we reuse a stream?
+
+21. Lazy evaluation in streams
+
+OPTIONAL (Tricky area)
+
+22. Why Optional was introduced?
+
+23. orElse vs orElseGet
+
+24. Can Optional be null?
+
+25. Is Optional Serializable?
+
+26. Best practices for using Optional in APIs
+
+DATE & TIME API
+
+27. Date vs LocalDate
+
+28. LocalDate vs LocalDateTime
+
+29. ZonedDateTime – real use case
+
+30. How to convert String to LocalDate?
+
+31. Thread safety of Java 8 Date-Time API
+
+DEFAULT & STATIC METHODS (Interfaces)
+
+32. Why default methods were introduced?
+
+33. Multiple interface default method conflict – how resolved?
+
+34. Can a default method be overridden?
+
+35. Static methods in interface – use case?
+
+MOST COMMON SCENARIO QUESTIONS
+
+36. You need a thread-safe cache – what will you use?
+
+37. You need a sorted + fast lookup map – which one?
+
+38. Handling large data with streams – approach?
+
+39. How to design an immutable class?
+
+40. How to make a singleton thread-safe?
+
+41. How to write equals() and hashCode() correctly?
+
+42. How do you debug a production issue?
+
+43. How do you improve performance of existing code?
+ 
+JAVA CORE -
+
+OOPS (Depth matters)
+
+1. Abstraction vs Encapsulation (real project example)
+
+2. Interface vs Abstract class (what changed after Java 8?)
+
+3. How is multiple inheritance achieved in Java?
+
+4. Why is composition preferred over inheritance?
+
+5. Can we override a static method? Why?
+
+6. Can a constructor be overridden?
+
+7. What is the Diamond problem? How does Java solve it?
+
+8. SOLID principles – Single Responsibility Principle in detail
+
+OBJECT CLASS (Favorite trap area)
+
+9. equals() vs ==
+
+10. Why override hashCode() when equals() is overridden?
+
+11. Can two objects have the same hashCode but not be equal?
+
+12. What happens if hashCode changes after putting an object in HashMap?
+
+13. Why is String immutable?
+
+14. How does String pool work internally?
+
+15. Difference between String, StringBuilder, and StringBuffer
+
+MULTITHREADING (Interview killer)
+
+16. What is thread safety?
+
+17. synchronized vs ReentrantLock
+
+18. volatile keyword – real use case
+
+19. wait() vs sleep()
+
+20. notify() vs notifyAll()
+
+21. What is deadlock? Give an example.
+
+22. How to prevent deadlock?
+
+23. Thread lifecycle
+
+24. Callable vs Runnable
+
+25. Future vs CompletableFuture
+
+26. How does thread pool work internally?
+
+27. ExecutorService vs ForkJoinPool
+
+COLLECTIONS (Most asked)
+
+28. HashMap internal working (Java 8)
+
+29. Why is HashMap not thread-safe?
+
+30. ConcurrentHashMap internal working
+
+31. HashMap vs Hashtable vs ConcurrentHashMap
+
+32. Why does HashMap allow one null key?
+
+33. TreeMap vs HashMap
+
+34. How does sorting work in TreeMap?
+
+35. Fail-fast vs Fail-safe iterators
+
+36. Why is entrySet() faster than keySet()?
+
+37. How to use a custom object as a Map key?
+
+38. Comparable vs Comparator (real use case)
+
+EXCEPTION HANDLING
+
+39. Checked vs Unchecked exceptions
+
+40. try-catch-finally execution order
+
+41. Can finally block be skipped?
+
+42. throw vs throws
+
+43. When and why do you create custom exceptions?
+
+44. Exception handling best practices in REST APIs
+
+JVM / MEMORY (Senior filter)
+
+45. JVM vs JRE vs JDK
+
+46. Stack vs Heap
+
+47. What goes into Metaspace?
+
+48. Types of Garbage Collectors
+
+49. Minor GC vs Major GC
+
+50. How to debug memory leaks?
+
+51. Causes of OutOfMemoryError
+
+52. Why finalize() is deprecated?
+ 
+CORE JAVA CODING QUESTIONS – 
+
+STRING & CHARACTER PROBLEMS (EVERY INTERVIEW)
+
+1. Reverse a String without using reverse()
+
+2. Check if a String is Palindrome
+
+3. Find first non-repeated character in a String
+
+4. Find first repeated character in a String
+
+5. Count frequency of each character in a String
+
+6. Check if two Strings are Anagrams
+
+7. Remove duplicate characters from a String
+
+8. Find longest substring without repeating characters
+
+9. Check if String contains only digits
+
+10. Capitalize first letter of each word
+
+ARRAY & NUMBER LOGIC (TRAP QUESTIONS)
+
+11. Find second largest number in an array
+
+12. Find missing number in array 1..n
+
+13. Find duplicate elements in an array
+
+14. Sort array without using sort()
+
+15. Find all pairs with given sum
+
+16. Move all zeros to the end
+
+17. Find largest and smallest element in single iteration
+
+18. Check if array is rotated and sorted
+
+19. Find intersection of two arrays
+
+20. Find kth largest element
+
+STREAM API (INTERVIEW GOLD)
+
+21. Find frequency of elements using Streams
+
+22. Find duplicate elements using Streams
+
+23. Find first non-repeated character using Streams
+
+24. Sort a list in reverse order using Streams
+
+25. Find max and min using Streams
+
+26. Convert List to Map
+
+27. Group employees by department
+
+28. Find highest salary employee per department
+
+29. Sum of salaries using reduce()
+
+30. Find second highest number using Streams
+
+COLLECTIONS (5+ YOE FILTER)
+
+31. Iterate HashMap in different ways
+
+32. Sort HashMap by keys
+
+33. Sort HashMap by values
+
+34. Sort custom objects using Comparator
+
+35. Comparable vs Comparator (with code)
+
+36. Why HashMap allows one null key
+
+37. How HashMap handles hash collisions
+
+38. Internal working of HashMap (Java 8)
+
+39. Fail-fast vs Fail-safe iterators
+
+40. Why ConcurrentHashMap is faster
+
+MULTITHREADING (REJECTION ZONE)
+
+41. Print even and odd numbers using two threads
+
+42. Producer-Consumer problem
+
+43. Create thread using Runnable vs Thread
+
+44. What happens if start() is called twice
+
+45. Deadlock example and prevention
+
+46. volatile keyword example
+
+47. synchronized vs Lock
+
+48. ExecutorService example
+
+49. Callable vs Runnable
+
+50. Thread-safe Singleton implementation
+
+OOPS CODING (DESIGN THINKING)
+
+51. Singleton class – all versions
+
+52. Immutable class design
+
+53. Overriding equals() and hashCode()
+
+54. Why composition over inheritance
+
+55. Interface vs Abstract class (Java 8+)
+
+56. Diamond problem example
+
+57. Factory design pattern
+
+58. Builder design pattern
+
+59. Strategy design pattern example
+
+60. SOLID principles with code
+ 
+Top Spring Boot Interview Questions:
+
+1️⃣ What is Spring Boot & why is it used?
+
+ 2️⃣ Difference between Spring & Spring Boot
+
+ 3️⃣ What is auto-configuration?
+
+ 4️⃣ How does Spring Boot starter work?
+
+ 5️⃣ @SpringBootApplication annotation explained
+
+ 6️⃣ What is embedded server? (Tomcat/Jetty)
+
+ 7️⃣ Difference between @Component, @Service, @Repository
+
+ 8️⃣ What is application.properties vs application.yml
+
+ 9️⃣ How to handle exceptions in Spring Boot?
+
+ 🔟 What is @ControllerAdvice?
+
+1️⃣1️⃣ REST vs MVC controller
+
+ 1️⃣2️⃣ How does dependency injection work?
+
+ 1️⃣3️⃣ What is Spring Boot Actuator?
+
+ 1️⃣4️⃣ Profiles in Spring Boot
+
+ 1️⃣5️⃣ How to secure REST APIs? (Basic intro)
+
+1️⃣6️⃣ JPA vs Hibernate
+
+ 1️⃣7️⃣ @Transactional – how it works internally
+
+ 1️⃣8️⃣ FetchType.LAZY vs EAGER
+
+ 1️⃣9️⃣ Pagination & Sorting in Spring Boot
+
+ 2️⃣0️⃣ How to write custom queries?
+
+2️⃣1️⃣ Difference between PUT & PATCH
+
+ 2️⃣2️⃣ How to handle validations? (@Valid)
+
+ 2️⃣3️⃣ How logging works in Spring Boot
+
+ 2️⃣4️⃣ How to call external APIs? (RestTemplate/WebClient)
+
+ 2️⃣5️⃣ Spring Boot microservices basics
+
+2️⃣6️⃣ How do you handle configuration for multiple environments?
+
+ 2️⃣7️⃣ What is circuit breaker? (basic)
+
+ 2️⃣8️⃣ How to improve performance in Spring Boot apps?
+
+ 2️⃣9️⃣ What are common production issues you faced?
+
+ 3️⃣0️⃣ How do you design a real-world REST API
+ 

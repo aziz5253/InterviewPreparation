@@ -1,0 +1,39 @@
+•	Spring Cloud - NO hands-on Spring Cloud. 
+•	No hands-on Saga design patterns X 
+•	No hands-on Circuit Breaker design patterns. X 
+•	No hands-on Kafka - X 
+•	NO hands-on Distributed tracing and logging - X 
+•	No hands-on Core Features of API Gateway - basic concept. X
+•	No hands-on API Gateway .X
+•	No hands-on Docker & Kubernetes X 
+Spring Boot - Rating 1.5/5.0 , 1 Years , Poor, Below average in Spring Boot core topics as per his grade & experience.
+Not able to explain most of the below questions as per his grade and experience.
+•	No hands on RBAC Authentication - X
+•	Partially able to explain How to manage ACID property in basic . 
+•	Not clearly explain Different Isolation Levels - 4 
+•	Not able to write syntax of Pagination in JPARepo - X
+•	Not able to write syntax of Native Query in JPARepo - X 
+•	Not able to write code to Upload File in Spring Boot app. X 
+•	Upload a File in Spring SQL - X 
+•	How to prevent XSS attack in Spring Boot - XSS
+•	Not able to explain How to prevent SQL INjection in Spring Boot - X 
+•	No hands on Spring Security JWTToken - X 
+Java – Rating – 2.0/5.0. Below average in Java problem solving, Java core features. No hands on multithreading , Java design patterns, data structure and multithreading.
+•	No hands-on Priority Queue - X 
+•	Not able to write code to get Median of LinkedList Data Structures - X 
+•	No hands-on Java Multi-Threading - X 
+•	Not able to clearly explain Record and Sealed Classes - X 
+•	Not aware of Virtual Thread in Java - X 
+•	Not able to write code to merge two sorted list into single list - X 
+•	No hands on How to customize Java serialization - X 
+•	How to increase JVM memory - X Not remember recall. 
+Design Patterns:  Below average in Java design patterns.
+•	No hands-on Composite, Decorator, Facade patterns- X  
+•	Only aware singleton design patterns out of 23 Java patterns. - X 
+•	No hands-on builder design pattern - X
+Junit and Mockito: No hands-on Junit + Mockito - X 
+CI CD – No hands-on CI CD. 
+Docker/Kubernetes: No hands-on Docker and Kubernetes - X 
+Messaging Queue: No hands-on messaging Queue.
+
+Explain each and every question in detailed with java example that I can write and explain in detailed

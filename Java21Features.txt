@@ -1,0 +1,635 @@
+Java 21 features
+1)String templates -Preview
+String template containing embedded expression evaluated at runtime
+
+Now String can contains variable method or field computed at runtime
+String s = STR."Hello \{name}";
+
+
+String json = """
+        {
+          "name": "John",
+          "age": 30,
+          "address": {
+            "city": "Mumbai",
+            "zip": "400001"
+          }
+        }
+        """;
+
+
+String name = "John";
+int age = 30;
+
+String json = STR."""
+    {
+      "name": "\{name}",
+      "age": \{age}
+    }
+    """;
+
+Static JSON in tests✅ Text BlocksDynamic JSON✅ 
+Text Blocks + String Templates
+Complex JSON mapping✅ ObjectMapper
+
+STEP 1: Convert template → StringTemplate object
+
+
+StringTemplate template = StringTemplate.of(
+    List.of("Hello ", ""),
+    List.of(name)
+);
+String str="""
+		This is thew roper {}
+"""
+
+Structure of StringTemplate
+It has:
+List<String> fragments;   // ["Hello ", ""]
+List<Object> values;      // [name]
+
+Visual Representation
+Fragments: ["Hello ", ""]
+Values:    [name]
+
+Step2 Pass to Processor (STR)
+
+String result = STR.process(template);
+
+STEP 3: Processor builds final string
+
+"Hello Aziz"
+
+2)Unnamed Pattern and Variables-preview
+
+try{
+
+}
+catch(Exception _)
+{
+System.out.println("Error")
+}
+
+Example (Before):
+Javaif (obj instanceof String s) {    // use s}Show more lines
+But what if you don’t need the variable?
+Javaif (obj instanceof String s) {    // but you never use s → warning!}Show more lines
+👉 Compiler says: "variable is unused"
+
+✅ Solution: Unnamed Pattern (_)
+✔ Ignore the variable
+Javaif (obj instanceof String _) {    System.out.println("It's a string");}Show more lines
+✅ No unused variable warning
+✅ Cleaner code
+✅ Intent is clearer: I only care about the type, not the value
+
+✅ 1. Unnamed Pattern in instanceof
+Before:
+Javaif (obj instanceof Integer i) {    System.out.println("Integer found");}``Show more lines
+After:
+Javaif (obj instanceof Integer _) {    System.out.println("Integer found");}``Show more lines
+
+✅ 2. Unnamed Variable in Catch Blocks
+Before:
+Javatry {    riskyOperation();} catch (Exception e) {    System.out.println("Error occurred");}Show more lines
+👉 e is unused
+
+After (Java 21):
+Javatry {    riskyOperation();} catch (Exception _) {    System.out.println("Error occurred");}Show more lines
+✅ Cleaner + no warning
+
+✅ 3. In Switch Pattern Matching
+Java supports powerful pattern matching in switch.
+Example:
+Javaswitch (obj) {    case String _ -> System.out.println("String");    case Integer _ -> System.out.println("Integer");    default -> System.out.println("Other");}Show more lines
+✅ You only care about type, not value
+
+✅ 4. Record Pattern Matching
+Records can be destructured.
+Example Record:
+Javarecord Person(String name, int age) {}Show more lines
+Before:
+Javaif (person instanceof Person p) {    System.out.println(p.name());}Show more lines
+
+Java 21 with unnamed pattern:
+Javaif (person instanceof Person(_, int age)) {    System.out.println(age);}``Show more lines
+👉 Ignoring name, using only age
+
+✅ 5. Multiple Unnamed Variables
+You can ignore multiple fields:
+Javaif (person instanceof Person(_, _)) {    System.out.println("Valid Person");}Show more lines
+
+⚠️ Important Rules
+❌ _ is NOT a normal variable
+You cannot use it:
+Javaint _ = 10; // ❌ compilation errorShow more lines
+
+❌ Cannot read from _
+Javaif (obj instanceof String _) {    System.out.println(_); // ❌ not allowed}Show more lines
+👉 _ means: completely ignore this value
+
+✅ Multiple _ allowed
+Javarecord Data(int a, int b) {}if (d instanceof Data(_, _)) {    // ok}Show more lines
+
+✅ Why This Feature Matters
+
+BenefitExplanation✅ Cleaner codeRemoves unused variables✅ Better readabilityFocus on what matters✅ Less warningsNo "unused variable"✅ Functional styleSimilar to Scala/Kotlin _
+
+🔥 Real-world Use Cases
+✅ Validation only
+Javaif (obj instanceof User _) {    // Just checking type}Show more lines
+
+✅ Event handling
+Javaswitch(event) {    case LoginEvent _ -> handleLogin();    case LogoutEvent _ -> handleLogout();}Show more lines
+
+✅ Partial destructuring
+Javaif (order instanceof Order(_, double price)) {    if (price > 1000) {        applyDiscount();    }}Show more lines
+
+✅ Comparison: Before vs After
+Before Java 21Java 21Mandatory variableOptionalUnused warningsNo warningsVerboseCleanConfusing intentClear intent
+2)unnamed classes and variable - preview
+
+Unnamed package and module
+
+
+Unaname classess and instance method
+It is used in
+Pattern matching
+Record patterns
+Switch patterns
+
+//Code snippet
+record Person(String name, int age) {}
+
+ void main(String args[]){
+        System.out.println("This main is without class");
+
+        Person obj=new Person("Aziz",21);
+        Object str="name";
+        switch (str) {
+            case Person(_, int age) when age > 18 -> System.out.println("Adult");
+            case String _ -> System.out.println("stringDetails");
+            default -> System.out.println("edfaukt");
+        }
+
+        if(obj instanceof  Person(_,int age))
+     {
+         System.out.println("It is String");
+     }
+        if(str instanceof String _){
+            System.out.println("It is String11");
+     }
+        int _=10;
+        
+
+    }
+
+
+
+if (obj instanceof String _) {
+    System.out.println(_); // ❌ ERROR
+
+case Person(_, _)  // both ignored
+
+Internally:
+
+Check type
+Extract fields
+Ignore first field
+Evaluate condition
+
+👉 _ is NOT a variable
+👉 _ is a placeholder pattern
+
+Match → but DO NOT bind
+
+✅ Slight improvement:
+
+No variable allocation
+Less bytecode
+Reduced stack usage
+
+👉 But main benefit = code clarity, not performance
+
+3)Sequenced Collection
+
+New interfaces created for sequence order first,second and Third
+
+//Code Snippet
+
+/*
+ * Copyright (c) 2021, 2023, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+
+package java.util;
+
+/**
+ * A collection that has a well-defined encounter order, that supports operations at both ends,
+ * and that is reversible. The elements of a sequenced collection have an <a id="encounter">
+ * <i>encounter order</i></a>, where conceptually the elements have a linear arrangement
+ * from the first element to the last element. Given any two elements, one element is
+ * either before (closer to the first element) or after (closer to the last element)
+ * the other element.
+ * <p>
+ * (Note that this definition does not imply anything about physical positioning
+ * of elements, such as their locations in a computer's memory.)
+ * <p>
+ * Several methods inherited from the {@link Collection} interface are required to operate
+ * on elements according to this collection's encounter order. For instance, the
+ * {@link Collection#iterator iterator} method provides elements starting from the first element,
+ * proceeding through successive elements, until the last element. Other methods that are
+ * required to operate on elements in encounter order include the following:
+ * {@link Iterable#forEach forEach}, {@link Collection#parallelStream parallelStream},
+ * {@link Collection#spliterator spliterator}, {@link Collection#stream stream},
+ * and all overloads of the {@link Collection#toArray toArray} method.
+ * <p>
+ * This interface provides methods to add, retrieve, and remove elements at either end
+ * of the collection.
+ * <p>
+ * This interface also defines the {@link #reversed reversed} method, which provides
+ * a reverse-ordered <a href="Collection.html#view">view</a> of this collection.
+ * In the reverse-ordered view, the concepts of first and last are inverted, as are
+ * the concepts of successor and predecessor. The first element of this collection is
+ * the last element of the reverse-ordered view, and vice-versa. The successor of some
+ * element in this collection is its predecessor in the reversed view, and vice-versa. All
+ * methods that respect the encounter order of the collection operate as if the encounter order
+ * is inverted. For instance, the {@link #iterator} method of the reversed view reports the
+ * elements in order from the last element of this collection to the first. The availability of
+ * the {@code reversed} method, and its impact on the ordering semantics of all applicable
+ * methods, allow convenient iteration, searching, copying, and streaming of the elements of
+ * this collection in either forward order or reverse order.
+ * <p>
+ * This class is a member of the
+ * <a href="{@docRoot}/java.base/java/util/package-summary.html#CollectionsFramework">
+ * Java Collections Framework</a>.
+ *
+ * @apiNote
+ * This interface does not impose any requirements on the {@code equals} and {@code hashCode}
+ * methods, because requirements imposed by sub-interfaces {@link List} and {@link SequencedSet}
+ * (which inherits requirements from {@link Set}) would be in conflict. See the specifications for
+ * {@link Collection#equals Collection.equals} and {@link Collection#hashCode Collection.hashCode}
+ * for further information.
+ *
+ * @param <E> the type of elements in this collection
+ * @since 21
+ */
+public interface SequencedCollection<E> extends Collection<E> {
+    /**
+     * Returns a reverse-ordered <a href="Collection.html#view">view</a> of this collection.
+     * The encounter order of elements in the returned view is the inverse of the encounter
+     * order of elements in this collection. The reverse ordering affects all order-sensitive
+     * operations, including those on the view collections of the returned view. If the collection
+     * implementation permits modifications to this view, the modifications "write through" to the
+     * underlying collection. Changes to the underlying collection might or might not be visible
+     * in this reversed view, depending upon the implementation.
+     *
+     * @return a reverse-ordered view of this collection
+     */
+    SequencedCollection<E> reversed();
+
+    /**
+     * Adds an element as the first element of this collection (optional operation).
+     * After this operation completes normally, the given element will be a member of
+     * this collection, and it will be the first element in encounter order.
+     *
+     * @implSpec
+     * The implementation in this interface always throws {@code UnsupportedOperationException}.
+     *
+     * @param e the element to be added
+     * @throws NullPointerException if the specified element is null and this
+     *         collection does not permit null elements
+     * @throws UnsupportedOperationException if this collection implementation
+     *         does not support this operation
+     */
+    default void addFirst(E e) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Adds an element as the last element of this collection (optional operation).
+     * After this operation completes normally, the given element will be a member of
+     * this collection, and it will be the last element in encounter order.
+     *
+     * @implSpec
+     * The implementation in this interface always throws {@code UnsupportedOperationException}.
+     *
+     * @param e the element to be added.
+     * @throws NullPointerException if the specified element is null and this
+     *         collection does not permit null elements
+     * @throws UnsupportedOperationException if this collection implementation
+     *         does not support this operation
+     */
+    default void addLast(E e) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Gets the first element of this collection.
+     *
+     * @implSpec
+     * The implementation in this interface obtains an iterator of this collection, and
+     * then it obtains an element by calling the iterator's {@code next} method. Any
+     * {@code NoSuchElementException} thrown is propagated. Otherwise, it returns
+     * the element.
+     *
+     * @return the retrieved element
+     * @throws NoSuchElementException if this collection is empty
+     */
+    default E getFirst() {
+        return this.iterator().next();
+    }
+
+    /**
+     * Gets the last element of this collection.
+     *
+     * @implSpec
+     * The implementation in this interface obtains an iterator of the reversed view
+     * of this collection, and then it obtains an element by calling the iterator's
+     * {@code next} method. Any {@code NoSuchElementException} thrown is propagated.
+     * Otherwise, it returns the element.
+     *
+     * @return the retrieved element
+     * @throws NoSuchElementException if this collection is empty
+     */
+    default E getLast() {
+        return this.reversed().iterator().next();
+    }
+
+    /**
+     * Removes and returns the first element of this collection (optional operation).
+     *
+     * @implSpec
+     * The implementation in this interface obtains an iterator of this collection, and then
+     * it obtains an element by calling the iterator's {@code next} method. Any
+     * {@code NoSuchElementException} thrown is propagated. It then calls the iterator's
+     * {@code remove} method. Any {@code UnsupportedOperationException} thrown is propagated.
+     * Then, it returns the element.
+     *
+     * @return the removed element
+     * @throws NoSuchElementException if this collection is empty
+     * @throws UnsupportedOperationException if this collection implementation
+     *         does not support this operation
+     */
+    default E removeFirst() {
+        var it = this.iterator();
+        E e = it.next();
+        it.remove();
+        return e;
+    }
+
+    /**
+     * Removes and returns the last element of this collection (optional operation).
+     *
+     * @implSpec
+     * The implementation in this interface obtains an iterator of the reversed view of this
+     * collection, and then it obtains an element by calling the iterator's {@code next} method.
+     * Any {@code NoSuchElementException} thrown is propagated. It then calls the iterator's
+     * {@code remove} method. Any {@code UnsupportedOperationException} thrown is propagated.
+     * Then, it returns the element.
+     *
+     * @return the removed element
+     * @throws NoSuchElementException if this collection is empty
+     * @throws UnsupportedOperationException if this collection implementation
+     *         does not support this operation
+     */
+    default E removeLast() {
+        var it = this.reversed().iterator();
+        E e = it.next();
+        it.remove();
+        return e;
+    }
+}
+
+For Lists / Sets
+Java
+collection.getFirst();
+collection.getLast();
+collection.addFirst(e);
+collection.addLast(e);
+collection.removeFirst();
+collection.removeLast();
+collection.reversed();
+
+
+SequencedCollection<String> list = new ArrayList<>();
+
+list.add("A");
+list.add("B");
+list.add("C");
+
+System.out.println(list.getFirst()); // A
+System.out.println(list.getLast());  // C
+
+
+
+SequencedMap<Integer, String> cache = new LinkedHashMap<>();
+
+cache.putLast(1, "A");
+cache.putLast(2, "B");
+
+cache.pollFirstEntry(); // remove oldest
+
+Not all collections are sequenced
+JavaHashSet ❌HashMap ❌
+
+✅ Q1: Is SequencedCollection a new data structure?
+👉 ❌ No
+👉 It’s an interface over existing collections
+
+
+✅ Q2: Is reversed() creating new memory?
+👉 ❌ No
+👉 It returns a view
+
+
+✅ Q3: Why HashMap not supported?
+👉 Because order is NOT guaranteed
+
+
+✅ Q4: What is biggest benefit?
+👉 Unified API for ordered collections
+
+
+✅ Q5: Internal advantage?
+👉 Cleaner API
+👉 Less boilerplate
+👉 No manual index handling
+
+❌ Before
+Java
+list.get(0);
+list.get(list.size() - 1);
+Collections.reverseShow more lines
+
+✅ After
+Java
+list.getFirst();
+list.getLast();
+list.reversed();
+
+🧠 FINAL UNDERSTANDING
+👉 Sequenced Collections = standard way to work with ordered data from both ends
+
+💡 One-line definition
+👉 SequencedCollection provides a unified API to access, modify, and traverse ordered collections from both the front and back efficiently
+
+This feature is small but powerful:
+👉 It prepares Java Collections for:
+
+Better APIs
+Cleaner code
+Functional-style programming
+DSL-like patterns
+
+List now have SequenceCollection as its immediate superinterface
+Deque now has SequenceCollection as its immediate superinterface
+LinekedHashset additionaly implements SequenceSet and
+SortedSet has now has SequenceSet as its immediate super interface
+LinkedHashMap additionally implements SequenceMap and
+SortedMap has now SequenceMap as its immediate superinterface
+
+Record Pattern
+
+Immutable data like pojo
+
+//
+record User(int userId,String name){
+
+}
+public class Records{
+    public void Testing(Object ob){
+        if(ob instanceof User(int userId,String name)){
+            System.out.println("User Id===="+userId);
+            System.out.println("User name===="+name);
+        }
+    }
+    public static void switchTesting(Object obj){
+        switch(obj){
+            case User(int userId,String name) -> System.out.printf("o is position:%d%s%n",userId,name);
+            case String s->System.out.printf("o is String :%s%n",s);
+            default->System.out.printf("o is something else %s%n",obj);
+        }
+    }
+    public static void main(String args[]){
+        new Records().Testing(new User(1235,"Aziz"));
+        Records.switchTesting(new User(1235,"Aziz"));
+    }
+}
+
+Virtual Threads
+
+Light weight threads help us to write high throughput concurrent appliation
+
+Java 5-Enhance For Loop,Generics,Enum and Autoboxing
+Java 8 -Functional Programming,Lambda Streams,Static method in interface
+Java 9- Modularization(Java Platform Module System) List.of() introduces in java9
+List.of() → create immutable list from elements
+List.copyOf() → create immutable list from existing collection
+Java 10-Local Variable Type Inference-List.copyOf()
+Java 11-WriteString and ReadString
+Java 14-Switch Expression(Preview in 12 and 13)
+Java 15-Text Blocks(Preview in 13)
+Java 16-Record Classes(Preview in 14 and 15)
+All Java version -Performance imporvement
+//Java 11
+File WriteString and ReadString
+package org.example;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class FileReadWriteRunnerJdk11 {
+    public static void main(String[] args) throws IOException {
+        Path path= Paths.get("src/main/resources/Sample.txt");
+        String fileContent=Files.readString(path);
+        System.out.println(fileContent);
+        String writeContent =fileContent.replace("Line","Lines");
+        Path path1= Paths.get("src/main/resources/SampleNew.txt");
+        Files.writeString(path1,writeContent);
+    }
+}
+
+//Predicate NOT
+
+package org.example;
+
+import java.util.List;
+import java.util.function.Predicate;
+
+public class PredicateNotJava11 {
+    public static void main(String[] args) {
+        List<Integer> numbers=List.of(3,4,5,67,89,88);
+        Predicate<Integer> evenNumberPredicate=number->number%2==0;
+        //numbers.stream().filter(evenNumberPredicate.negate()).forEach(System.out::println);
+        numbers.stream().filter(Predicate.not(PredicateNotJava11::isEven)).forEach(System.out::println);
+    }
+    public static boolean isEven(int number){
+        return number%2==0;
+    }
+}
+//isBlank() method is introduced it check if it is empty or non white space character
+//strip() returns a string whose value is string with leading and trailing white spaces are removed
+//lines() method used to split and it return stream()
+package org.example;
+
+public class StringNewApiRunner {
+    public static void main(String[] args) {
+        System.out.println(" ".isBlank());
+        System.out.println(" L R ".strip().replace(" ","@"));
+        System.out.println(" L R ".stripLeading().replace(" ","@"));
+        System.out.println(" L R ".stripTrailing().replace(" ","@"));
+        "Line1\nLine2\nLine3\nLine4".lines().forEach(System.out::println);
+
+      
+
+
+    }
+}
+//java 12
+transform(String s)
+  public <R> R transform(Function<? super String, ? extends R> f) {
+        return f.apply(this);
+    }
+	
+	
+        System.out.println(
+                "UPPER".transform((String s) -> s.substring(2))
+        );
+//Java 14 isBlank method if null it gives details exception
+ String str=null;
+       // System.out.println(str.isBlank());
+        //Exception in thread "main" java.lang.NullPointerException: Cannot invoke "String.isBlank()" because "str" is null
+        //	at org.example.StringNewApiRunner.main(StringNewApiRunner.java:17)
+
+        SampleClass sample=new SampleClass();
+        System.out.println(sample.str.isBlank());
+        //Exception in thread "main" java.lang.NullPointerException: Cannot invoke "String.isBlank()" because "sample.str" is null
+        //	at org.example.StringNewApiRunner.main(StringNewApiRunner.java:24)
+//java 15 
+  public String formatted(Object... args) {
+        return new Formatter().format(this, args).toString();
+    }
+	 System.out.println("My name is %s.My age is %d.".formatted("Ranga",25));

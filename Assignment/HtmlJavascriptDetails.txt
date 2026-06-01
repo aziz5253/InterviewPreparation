@@ -1,0 +1,65 @@
+✅ ✅ ✅ PART 1: HTML & CSS
+
+✅ Q1. Create a personal portfolio webpage
+✅ Answer:
+HTML<section id="about"><section id="about>About Me</h2>  <p>I am a web developer.</p></section><section id="projects">  <h2>Projects</h2>  <p>Project 1, Project 2</p></section><section id="skills">  <h2>Skills</h2>  <ul>    <li>HTML</li>    <li>CSS</li>  </ul></section><section id="contact">  <h2>Contact</h2>  <p>Email: test@mail.com</p></section>Show more lines
+👉 Sections are created using <section> tags.
+
+✅ Q2. Responsive Navbar with Hamburger (No JS)
+✅ Answer:
+HTML<nav>  <input type="checkbox" id="menu">  <label for="menu">&#9776;</label>  <ul>    <li><a href="#">Home</a></li>  </ul></nav>Show more lines
+CSSul {  display: flex;}@media(max-width:768px){  ul { display:none; }  #menu:checked + label + ul { display:block; }}``Show more lines
+👉 Uses checkbox hack.
+
+✅ Q3. Registration Form
+✅ Answer:
+HTML<form>  <input type="text" placeholder="Name">  <input type="email" placeholder="Email">  <input type="password" placeholder="Password">  <p>Gender:</p>  <label><input type="radio"> Male</label>  <label><input type="radio"> Female</label>  <p>Hobbies:</p>  <label><input type="checkbox"> Reading</label>  <label><input type="checkbox"> Sports</label>  <button>Submit</button></form>Show more lines
+CSSform { width:300px; margin:auto; }button { display:block; margin:auto; }Show more lines
+
+✅ Q4. Pricing Table
+✅ Answer:
+HTML<div class="pricing">  <div class="plan">Basic - $10</div>  <div class="plan">Standard - $20</div>  <div class="plan">Premium - $30</div></div>Show more lines
+CSS.pricing {  display:flex;  gap:20px;  justify-content:center;}``Show more lines
+👉 Uses Flexbox.
+
+✅ Q5. Landing Page
+✅ Answer:
+HTML<section class="hero">  <h1>Product</ class="testimonials">  <h1>Product</h1>  <p>"Great!"</p></section><footer>Footer</footer></section><section class="features">  <div>Feature 1</div></section>Show more lines
+CSS.hero {  background: black;  color: white;  text-align:center;}Show more lines
+
+✅ Q6. Image Gallery
+✅ Answer:
+HTML<div class="gallery"><div <img src="img1.jpg">  <img src="img2.jpg"></div>Show more lines
+CSS.gallery {  display:flex;  flex-wrap:wrap;}.gallery img:hover {  transform:scale(1.1);}Show more lines
+
+✅ Q7. Blog Layout
+✅ Answer:
+HTML<main class="container"><main class  <article>Main Content</article>  <aside>Sidebar</aside></main><footer>Blog Footer</footer>``Show more lines
+CSS.container {  display:flex;}Show more lines
+
+✅ ✅ ✅ PART 2: JAVASCRIPT
+
+✅ Q8. Form Validation
+JavaScriptfunction validateForm(){  let name=document.getElementById("name").value;  if(name===""){    alert("Required");    return false;  }  return true;}Show more lines
+
+✅ Q9. To‑Do List (localStorage)
+JavaScriptlet tasks=[];function add=document.getElementById("task").value;function addTask(){  tasks.push(t);  localStorage.setItem("tasks",JSON.stringify(tasks));}Show more lines
+
+✅ Q10. Calculator
+JavaScriptfunction calc(){  let a=Number(num1.value);  let b=Number(num2.value);  result.innerText=a+b;}Show more lines
+
+✅ Q11. Digital Clock
+JavaScriptsetInterval(()=>{  clock.innerText=new Date().toLocaleTimeString();},1000);Show more lines
+
+✅ Q12. Image Slider
+JavaScriptlet images=["1.jpg","2.jpg"];let i=0;setInterval(()=>{  img.src=images[i++ % images.length];},3000);``Show more lines
+
+✅ Q13. Second Largest Number
+JavaScriptfunction secondLargest(arr){  arr.sort((a,b)=>b-a);  return arr[1];}Show more lines
+
+✅ Q14. Dropdown Menu
+JavaScriptfunction toggle(){  let d=document.getElementById("menu");  if(d.style.display==="none"){    d.style.display="block";  } else {    d.style.display="none";  }}Show more lines
+
+✅ ✅ ✅ FINAL SUMMARY (EXAM READY)
+
+TopicKey ConceptPortfolioSectionsNavbarCheckbox hackFormInputs + CSSPricingFlexboxLanding PageHero + featuresGalleryHover effectBlogSemantic layoutJS ValidationConditionsTo‑DolocalStorageCalculatorOperatorsClocksetIntervalSliderAuto changeSecond LargestSortingDropdownDOM toggle
