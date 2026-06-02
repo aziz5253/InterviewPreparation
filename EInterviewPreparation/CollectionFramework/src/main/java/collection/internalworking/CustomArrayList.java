@@ -4,75 +4,64 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class CustomArrayList<E> {
-    private static final int DEFAULT_CAPACITY = 10;
-    private Object[] elements;
-    private int size = 0;
+   private static final int DEFAULT_CAPACITY=10;
+   private int size=0;
+   private Object[] elements;
 
-    public CustomArrayList() {
-        elements = new Object[DEFAULT_CAPACITY];
+   public CustomArrayList(){
+       elements = new Object[DEFAULT_CAPACITY];
+   }
+   public CustomArrayList(int initalCapacity){
+       if(initalCapacity<0) {
+           throw new IllegalArgumentException("Capacity cannot be negative");
+       }
+       elements = new Object[initalCapacity];
+    }
+    public boolean add(E element){
+       ensureCapacityDetails(size+1);
+       elements[size++]=element;
+       return true;
     }
 
-    public CustomArrayList(int initialCapacity) {
-        if (initialCapacity < 0) {
-            throw new IllegalArgumentException("Illegal Capacity: " + initialCapacity);
-        }
-        elements = new Object[initialCapacity];
-    }
-
-    // Core add operation with resize logic
-    public boolean add(E element) {
-        ensureCapacity(size + 1);
-        elements[size++] = element;
-        return true;
-    }
-
-    // Add at specific index - shifts elements right
-    public void add(int index, E element) {
+    public void add(int index,E element){
         rangeCheckForAdd(index);
-        ensureCapacity(size + 1);
-        // Shift elements from index to end, one position right
-        System.arraycopy(elements, index, elements, index + 1, size - index);
-        elements[index] = element;
+        ensureCapacityDetails(size+1);
+        System.arraycopy(elements,index,elements,index+1,size-index);
+        elements[index]=element;
         size++;
-    }
 
-    // Growth strategy: newCapacity = oldCapacity + (oldCapacity >> 1) = 1.5x
-    private void ensureCapacity(int minCapacity) {
-        if (minCapacity > elements.length) {
-            int oldCapacity = elements.length;
-            int newCapacity=oldCapacity + oldCapacity>>1;
-            if (newCapacity < minCapacity) {
-                newCapacity = minCapacity;
-            }
-            elements = Arrays.copyOf(elements, newCapacity);
-        }
     }
+    
 
-    @SuppressWarnings("unchecked")
-    public E get(int index) {
-        rangeCheck(index);
-        return (E) elements[index];
+    private void ensureCapacityDetails(int minCapacity) {
+       if(minCapacity> elements.length){
+           int oldCapacity=elements.length;
+           int newCapacity=oldCapacity + (oldCapacity>>1);
+           if(newCapacity<minCapacity){
+               newCapacity=minCapacity;
+           }
+           elements=Arrays.copyOf(elements,newCapacity);
+       }
     }
 
     public E set(int index, E element) {
         rangeCheck(index);
         @SuppressWarnings("unchecked")
-        E oldValue = (E) elements[index];
-        elements[index] = element;
+        E oldValue=(E) elements[index];
+        elements[index]=element;
         return oldValue;
     }
 
     public E remove(int index) {
         rangeCheck(index);
         @SuppressWarnings("unchecked")
-        E oldValue = (E) elements[index];
-       int numMoved=size-index-1;
-       if(numMoved>0)
-       {
-           System.arraycopy(elements,index+1,elements,index,numMoved);
-       }
-       elements[--size]=null;
-       return oldValue;
+       E oldValue=(E) elements[index];
+        int numMoved=size-index-1;
+        if(numMoved>0){
+            System.arraycopy(elements,index+1,elements,index,numMoved);
+        }
+        elements[--size]=null;
+        return oldValue;
     }
 
     public boolean remove(Object o) {
@@ -140,5 +129,10 @@ public class CustomArrayList<E> {
             if (i < size - 1) sb.append(", ");
         }
         return sb.append("]").toString();
+    }
+
+    public E get(int index) {
+       rangeCheck(index);
+      return (E) elements[index];
     }
 }
